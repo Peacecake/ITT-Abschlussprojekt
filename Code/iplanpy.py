@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import time
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 import wiimote
 
@@ -16,7 +17,17 @@ class IPlanPy(QtWidgets.QWidget):
     def init_ui(self):
         self.ui = uic.loadUi("iplanpy.ui", self)
         self.ui.btn_connect_wiimote.clicked.connect(self.toggle_wiimote_connection)
+        self.ui.btn_scan_wiimotes.clicked.connect(self.scan_for_wiimotes)
         self.show()
+
+    def scan_for_wiimotes(self, event):
+        self.ui.btn_scan_wiimotes.setText("Scanning...")
+        self.ui.list_available_wiimotes.clear()
+        results = wiimote.find()
+        for mote in results:
+            addr, name = mote
+            self.ui.list_available_wiimotes.addItem(addr)
+        self.ui.btn_scan_wiimotes.setText("Scan")
 
     def toggle_wiimote_connection(self):
         if self.wiimote is not None:
@@ -26,20 +37,25 @@ class IPlanPy(QtWidgets.QWidget):
 
     def connect_wiimote(self):
         self.ui.btn_connect_wiimote.setText("Connecting...")
-        results = wiimote.find()
-        if len(results) > 0:
-            addr, name = results[0]
-            self.wiimote = wiimote.connect(addr, name)
-            if self.wiimote is None:
-                self.ui.btn_connect_wiimote.setText("Connect")
-            else:
-                self.ui.btn_connect_wiimote.setText("Disconnect")
-                self.ui.lbl_wiimote_address.setText("Connected to " + addr)
-                self.wiimote.buttons.register_callback(self.on_wiimote_button)
-                self.wiimote.ir.register_callback(self.on_wiimote_ir)
-                self.wiimote.rumble()
-        else:
-            self.ui.btn_connect_wiimote.setText("Connect")
+        currentItem = self.ui.list_available_wiimotes.currentItem()
+        if currentItem is not None:
+            addr = currentItem.text()
+            if addr is not "":
+                try:
+                    self.wiimote = wiimote.connect(addr)
+                except Exception:
+                    QtWidgets.QMessageBox.critical(self, "Error", "Could not connect to " + addr + "!")
+                    self.ui.btn_connect_wiimote.setText("Connect")
+                    return
+
+                if self.wiimote is None:
+                    self.ui.btn_connect_wiimote.setText("Connect")
+                else:
+                    self.ui.btn_connect_wiimote.setText("Disconnect")
+                    self.ui.lbl_wiimote_address.setText("Connected to " + addr)
+                    self.wiimote.buttons.register_callback(self.on_wiimote_button)
+                    self.wiimote.ir.register_callback(self.on_wiimote_ir)
+                    self.wiimote.rumble()
 
     def disconnect_wiimote(self):
         self.wiimote.disconnect()

@@ -18,8 +18,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>361</width>
-     <height>51</height>
+     <width>231</width>
+     <height>291</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -32,7 +32,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>250</y>
       <width>85</width>
       <height>27</height>
      </rect>
@@ -44,14 +44,37 @@
    <widget class="QLabel" name="lbl_wiimote_address">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>10</x>
       <y>10</y>
-      <width>221</width>
+      <width>201</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>not connected</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="list_available_wiimotes">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>201</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_scan_wiimotes">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>250</y>
+      <width>85</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Scan</string>
     </property>
    </widget>
   </widget>
