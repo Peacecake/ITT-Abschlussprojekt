@@ -29,8 +29,8 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui.list_available_wiimotes.clear()
         results = wiimote.find()
         for mote in results:
-            addr, name = mote
-            self.ui.list_available_wiimotes.addItem(addr)
+            address, name = mote
+            self.ui.list_available_wiimotes.addItem(address)
         self.ui.btn_scan_wiimotes.setText("Scan")
 
     def toggle_wiimote_connection(self):
@@ -41,14 +41,14 @@ class IPlanPy(QtWidgets.QWidget):
 
     def connect_wiimote(self):
         self.ui.btn_connect_wiimote.setText("Connecting...")
-        currentItem = self.ui.list_available_wiimotes.currentItem()
-        if currentItem is not None:
-            addr = currentItem.text()
-            if addr is not "":
+        current_item = self.ui.list_available_wiimotes.currentItem()
+        if current_item is not None:
+            address = current_item.text()
+            if address is not "":
                 try:
-                    self.wiimote = wiimote.connect(addr)
+                    self.wiimote = wiimote.connect(address)
                 except Exception:
-                    QtWidgets.QMessageBox.critical(self, "Error", "Could not connect to " + addr + "!")
+                    QtWidgets.QMessageBox.critical(self, "Error", "Could not connect to " + address + "!")
                     self.ui.btn_connect_wiimote.setText("Connect")
                     return
 
@@ -56,7 +56,7 @@ class IPlanPy(QtWidgets.QWidget):
                     self.ui.btn_connect_wiimote.setText("Connect")
                 else:
                     self.ui.btn_connect_wiimote.setText("Disconnect")
-                    self.ui.lbl_wiimote_address.setText("Connected to " + addr)
+                    self.ui.lbl_wiimote_address.setText("Connected to " + address)
                     self.wiimote.buttons.register_callback(self.on_wiimote_button)
                     self.wiimote.ir.register_callback(self.on_wiimote_ir)
                     self.wiimote.rumble()
