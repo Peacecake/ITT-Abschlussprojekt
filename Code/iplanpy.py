@@ -18,7 +18,11 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui = uic.loadUi("iplanpy.ui", self)
         self.ui.btn_connect_wiimote.clicked.connect(self.toggle_wiimote_connection)
         self.ui.btn_scan_wiimotes.clicked.connect(self.scan_for_wiimotes)
+        self.ui.btn_toggle_connection_frame.clicked.connect(self.toggle_connection_frame)
         self.show()
+
+    def toggle_connection_frame(self, event):
+        self.ui.fr_connection.setVisible(not self.ui.fr_connection.isVisible())
 
     def scan_for_wiimotes(self, event):
         self.ui.btn_scan_wiimotes.setText("Scanning...")

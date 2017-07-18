@@ -13,11 +13,11 @@
   <property name="windowTitle">
    <string>IPlanPy</string>
   </property>
-  <widget class="QFrame" name="frame">
+  <widget class="QFrame" name="fr_connection">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
+     <y>20</y>
      <width>231</width>
      <height>291</height>
     </rect>
@@ -77,6 +77,19 @@
      <string>Scan</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="btn_toggle_connection_frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>141</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Connection Settings</string>
+   </property>
   </widget>
  </widget>
  <resources/>
