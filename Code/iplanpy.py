@@ -12,6 +12,7 @@ class IPlanPy(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.wiimote = None
+        self.setMouseTracking(True)
         self.init_ui()
 
     def init_ui(self):
@@ -78,6 +79,11 @@ class IPlanPy(QtWidgets.QWidget):
     def on_wiimote_ir(self, event):
         if len(event) is not 0:
             print(event)
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & QtCore.Qt.LeftButton:
+            if self.ui.fr_card.underMouse() is True:
+                self.ui.fr_card.setGeometry(event.pos().x(), event.pos().y(), self.ui.fr_card.size().width(), self.ui.fr_card.size().height())
 
 
 if __name__ == '__main__':
