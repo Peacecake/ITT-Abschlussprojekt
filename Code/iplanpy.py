@@ -6,12 +6,14 @@ import sys
 import time
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 import wiimote
+from vectortransform import *
 
 
 class IPlanPy(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.wiimote = None
+        self.my_vector_transform = VectorTransform(self.size().width(), self.size().height())
         self.setMouseTracking(True)
         self.init_ui()
 
@@ -77,13 +79,22 @@ class IPlanPy(QtWidgets.QWidget):
                 print("Button " + button + " is released")
 
     def on_wiimote_ir(self, event):
-        if len(event) is not 0:
-            print(event)
+        if len(event) is 4:
+            vectors = []
+            for e in event:
+                vectors.append((e["x"], e["y"]))
+            # print(vectors)
+            # vector1 = (event[0].x, event[0].y)
+            # vector2 = (event[1])
+            x, y = self.my_vector_transform.transform(vectors)
+            QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
+            # print(event)
 
     def mouseMoveEvent(self, event):
         if event.buttons() & QtCore.Qt.LeftButton:
             if self.ui.fr_card.underMouse() is True:
-                self.ui.fr_card.setGeometry(event.pos().x(), event.pos().y(), self.ui.fr_card.size().width(), self.ui.fr_card.size().height())
+                self.ui.fr_card.setGeometry(event.pos().x(), event.pos().y(),
+                                            self.ui.fr_card.size().width(), self.ui.fr_card.size().height())
 
 
 if __name__ == '__main__':
