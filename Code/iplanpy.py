@@ -3,10 +3,9 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import time
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 import wiimote
-from vectortransform import *
+from vectortransform import VectorTransform
 
 
 class IPlanPy(QtWidgets.QWidget):
@@ -83,12 +82,8 @@ class IPlanPy(QtWidgets.QWidget):
             vectors = []
             for e in event:
                 vectors.append((e["x"], e["y"]))
-            # print(vectors)
-            # vector1 = (event[0].x, event[0].y)
-            # vector2 = (event[1])
             x, y = self.my_vector_transform.transform(vectors)
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
-            # print(event)
 
     def mouseMoveEvent(self, event):
         if event.buttons() & QtCore.Qt.LeftButton:
