@@ -85,11 +85,36 @@ class IPlanPy(QtWidgets.QWidget):
             x, y = self.my_vector_transform.transform(vectors)
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
 
-    def mouseMoveEvent(self, event):
-        if event.buttons() & QtCore.Qt.LeftButton:
-            if self.ui.fr_card.underMouse() is True:
-                self.ui.fr_card.setGeometry(event.pos().x(), event.pos().y(),
-                                            self.ui.fr_card.size().width(), self.ui.fr_card.size().height())
+    def mouseReleaseEvent(self, event):
+        if self.__mousePressPos is not None:
+            moved = event.globalPos() - self.__mousePressPos
+            self.register_if_deleted(event.pos().x(), event.pos().y())
+            if moved.manhattanLength() > 3:
+                event.ignore()
+                return
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_B:
+            print("Key B")
+        if event.key() == QtCore.Qt.Key_A:
+            print("Key A")
+
+        if event.type() == QtCore.QEvent.HoverMove:
+            print('hover' + str(event))
+            self.new_card.setStyleSheet('background-color: blue')
+
+    def make_new_card(self):
+        print("new card!")
+
+    def register_if_deleted(self, posX, posY):
+        delete_button_pos_x1 = self.delete_card.x()
+        delete_button_pos_x2 = delete_button_pos_x1 + self.delete_card.width()
+        delete_button_pos_y1 = self.delete_card.y()
+        delete_button_pos_y2 = delete_button_pos_y1 + self.delete_card.height()
+        print('pos' + str(posX), str(posY))
+        print('buttonpos' + str(delete_button_pos_x1), str(delete_button_pos_x2), str(delete_button_pos_y1), str(delete_button_pos_y2))
+        if(posX >= delete_button_pos_x1 and posX <= delete_button_pos_x2 and posY >= delete_button_pos_y1 and posY <= delete_button_pos_y2):
+            print('DELETE!')
 
 
 if __name__ == '__main__':

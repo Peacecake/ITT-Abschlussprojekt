@@ -139,6 +139,37 @@
     </property>
    </widget>
   </widget>
+  <widget class="QPushButton" name="new_card">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>490</y>
+     <width>91</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>New Card</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="delete_card">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>490</y>
+     <width>91</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Delete X</string>
+   </property>
+  </widget>
+  <zorder>delete_card</zorder>
+  <zorder>new_card</zorder>
+  <zorder>fr_connection</zorder>
+  <zorder>btn_toggle_connection_frame</zorder>
+  <zorder>fr_card</zorder>
  </widget>
  <resources/>
  <connections/>
