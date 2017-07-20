@@ -21,6 +21,10 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui.btn_connect_wiimote.clicked.connect(self.toggle_wiimote_connection)
         self.ui.btn_scan_wiimotes.clicked.connect(self.scan_for_wiimotes)
         self.ui.btn_toggle_connection_frame.clicked.connect(self.toggle_connection_frame)
+
+        self.ui.new_card.clicked.connect(self.make_new_card)
+        self.ui.delete_card.setVisible(True)
+
         self.show()
 
     def toggle_connection_frame(self, event):
@@ -84,6 +88,28 @@ class IPlanPy(QtWidgets.QWidget):
                 vectors.append((e["x"], e["y"]))
             x, y = self.my_vector_transform.transform(vectors)
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
+
+    def mousePressEvent(self, event):
+        self.__mousePressPos = None
+        self.__mouseMovePos = None
+        if event.button() == QtCore.Qt.LeftButton:
+            self.__mousePressPos = event.globalPos()
+            self.__mouseMovePos = event.globalPos()
+        # super(IPlanPy, self).mousePressEvent(event)
+        print("mousePressEvent" + str(self.__mousePressPos) + ' ' + str(self.__mouseMovePos))
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & QtCore.Qt.LeftButton:
+            if self.ui.fr_card.underMouse() is True:
+                self.ui.fr_card.setGeometry(event.pos().x(), event.pos().y(),
+                                            self.ui.fr_card.size().width(), self.ui.fr_card.size().height())
+            
+        if event.buttons() == QtCore.Qt.LeftButton:
+            currPos = self.mapToGlobal(self.pos())
+            globalPos = event.globalPos()
+            diff = globalPos - self.__mouseMovePos
+            newPos = self.mapFromGlobal(currPos + diff)
+            self.__mouseMovePos = globalPos
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
