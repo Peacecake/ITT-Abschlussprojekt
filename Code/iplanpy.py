@@ -6,6 +6,7 @@ import sys
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 import wiimote
 from vectortransform import VectorTransform
+from gestureclassifier import GestureClassifier
 
 
 class IPlanPy(QtWidgets.QWidget):
@@ -13,6 +14,8 @@ class IPlanPy(QtWidgets.QWidget):
         super().__init__()
         self.wiimote = None
         self.my_vector_transform = VectorTransform(self.size().width(), self.size().height())
+        self.classifier = GestureClassifier()
+        self.classifier.register_observer(self)
         self.setMouseTracking(True)
         self.init_ui()
 
@@ -61,6 +64,7 @@ class IPlanPy(QtWidgets.QWidget):
                     self.ui.lbl_wiimote_address.setText("Connected to " + address)
                     self.wiimote.buttons.register_callback(self.on_wiimote_button)
                     self.wiimote.ir.register_callback(self.on_wiimote_ir)
+                    self.wiimote.accelerometer.register_callback(self.on_wiimote_accelerometer)
                     self.wiimote.rumble()
 
     def disconnect_wiimote(self):
@@ -84,6 +88,9 @@ class IPlanPy(QtWidgets.QWidget):
                 vectors.append((e["x"], e["y"]))
             x, y = self.my_vector_transform.transform(vectors)
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
+
+    def on_wiimote_accelerometer(self, event):
+        self.classifier.add_accelerometer_data(event[0], event[1], event[2])
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
@@ -115,6 +122,9 @@ class IPlanPy(QtWidgets.QWidget):
         print('buttonpos' + str(delete_button_pos_x1), str(delete_button_pos_x2), str(delete_button_pos_y1), str(delete_button_pos_y2))
         if(posX >= delete_button_pos_x1 and posX <= delete_button_pos_x2 and posY >= delete_button_pos_y1 and posY <= delete_button_pos_y2):
             print('DELETE!')
+
+    def handle_shake_gesture(self):
+        print("shake detected")
 
 
 if __name__ == '__main__':
