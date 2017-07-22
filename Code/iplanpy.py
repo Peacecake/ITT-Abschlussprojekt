@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QFrame, QLineEdit, QPlainText
 import wiimote
 from vectortransform import VectorTransform
 from gestureclassifier import GestureClassifier
+from card import Card
 
 
 class IPlanPy(QtWidgets.QWidget):
@@ -19,6 +20,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.classifier = GestureClassifier()
         self.classifier.register_callback(self.handle_shake_gesture)
         self.setMouseTracking(True)
+        self.all_cards = []
         self.bg_colors = ['background-color: rgb(85, 170, 255)', 'background-color: red', 'background-color: green']
         self.init_ui()
         self.display_known_wiimotes()
@@ -51,6 +53,8 @@ class IPlanPy(QtWidgets.QWidget):
 
         self.ui.new_card.clicked.connect(self.make_new_card)
         self.ui.delete_card.setVisible(True)
+
+        self.all_cards.append(self.ui.fr_card)
 
         self.show()
 
@@ -146,14 +150,10 @@ class IPlanPy(QtWidgets.QWidget):
 
     def mouseMoveEvent(self, event):
         if event.buttons() & QtCore.Qt.LeftButton:
-            if self.ui.fr_card.underMouse() is True:
-                self.ui.fr_card.setGeometry(event.pos().x(), event.pos().y(),
-                                            self.ui.fr_card.size().width(), self.ui.fr_card.size().height())
-            else:
-                widget_at = QApplication.widgetAt(QtGui.QCursor.pos())
-                if widget_at.underMouse() is True:
-                    widget_at.setGeometry(event.pos().x(), event.pos().y(),
-                                          widget_at.size().width(), widget_at.size().height())
+            card_under_mouse = self.get_card_under_mouse()
+            if card_under_mouse is not None:
+                card_under_mouse.setGeometry(event.pos().x(), event.pos().y(),
+                                             card_under_mouse.size().width(), card_under_mouse.size().height())
 
         if event.buttons() == QtCore.Qt.LeftButton:
             currPos = self.mapToGlobal(self.pos())
@@ -161,6 +161,13 @@ class IPlanPy(QtWidgets.QWidget):
             diff = globalPos - self.__mouseMovePos
             newPos = self.mapFromGlobal(currPos + diff)
             self.__mouseMovePos = globalPos
+
+    def get_card_under_mouse(self):
+        card = None
+        for c in self.all_cards:
+            if c.underMouse() is True:
+                card = c
+        return card
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
@@ -181,38 +188,17 @@ class IPlanPy(QtWidgets.QWidget):
             self.new_card.setStyleSheet('background-color: blue')
 
     def make_new_card(self):
-        self.new_frame = QFrame(self)
-        self.new_frame.setStyleSheet('background-color: rgb(85, 170, 255)')
-        self.new_frame.resize(281, 181)
-        self.new_frame.setVisible(True)
-
-        self.new_title = QLineEdit(self)
-        self.new_title.resize(131, 29)
-        self.new_title.move(72, 10)
-        self.new_title.setParent(self.new_frame)
-        self.new_title.setStyleSheet('background-color: white')
-        self.new_title.setVisible(True)
-
-        self.new_text_edit = QPlainTextEdit(self)
-        self.new_text_edit.resize(261, 121)
-        self.new_text_edit.move(10, 50)
-        self.new_text_edit.setParent(self.new_frame)
-        self.new_text_edit.setStyleSheet('background-color: white')
-        self.new_text_edit.setVisible(True)
-
-        self.new_frame.setMouseTracking(True)
-
-        self.show()
+        self.all_cards.append(Card(self))
 
     def register_if_deleted(self, posX, posY):
         delete_button_pos_x1 = self.delete_card.x()
         delete_button_pos_x2 = delete_button_pos_x1 + self.delete_card.width()
         delete_button_pos_y1 = self.delete_card.y()
         delete_button_pos_y2 = delete_button_pos_y1 + self.delete_card.height()
-        if(posX >= delete_button_pos_x1 and posX <= delete_button_pos_x2 and posY >= delete_button_pos_y1 and posY <= delete_button_pos_y2):
-            pos = QtGui.QCursor.pos()
-            widget_at = QApplication.widgetAt(pos)
-            widget_at.setParent(None)
+        if delete_button_pos_x2 >= posX >= delete_button_pos_x1 and delete_button_pos_y1 <= posY <= delete_button_pos_y2:
+            card = self.get_card_under_mouse()
+            card.setParent(None)
+            self.all_cards.remove(card)
 
     def handle_shake_gesture(self):
         print("shake detected")
