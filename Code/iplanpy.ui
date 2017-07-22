@@ -13,6 +13,11 @@
   <property name="windowTitle">
    <string>IPlanPy</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QFrame:hover#fr_card{
+	border: 1px solid blue
+}</string>
+  </property>
   <widget class="QFrame" name="fr_connection">
    <property name="enabled">
     <bool>true</bool>
@@ -20,7 +25,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>20</y>
+     <y>30</y>
      <width>231</width>
      <height>291</height>
     </rect>
@@ -87,7 +92,7 @@
      <x>0</x>
      <y>0</y>
      <width>141</width>
-     <height>27</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -142,11 +147,16 @@
   <widget class="QPushButton" name="new_card">
    <property name="geometry">
     <rect>
-     <x>11</x>
-     <y>490</y>
+     <x>10</x>
+     <y>370</y>
      <width>91</width>
      <height>91</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton:hover#new_card {
+	background-color: green
+}</string>
    </property>
    <property name="text">
     <string>New Card</string>
@@ -155,11 +165,16 @@
   <widget class="QPushButton" name="delete_card">
    <property name="geometry">
     <rect>
-     <x>730</x>
+     <x>10</x>
      <y>490</y>
      <width>91</width>
      <height>91</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton:hover#delete_card {
+	background-color: red
+}</string>
    </property>
    <property name="text">
     <string>Delete X</string>
