@@ -20,12 +20,12 @@ class GestureClassifier:
         self.train_predicter()
 
     # Observer pattern taken from https://en.wikipedia.org/wiki/Observer_pattern
-    def register_observer(self, observer):
-        self._observers.append(observer)
+    def register_callback(self, function):
+        self._observers.append(function)
 
     def notify_observers(self):
-        for observer in self._observers:
-            observer.handle_shake_gesture()
+        for function in self._observers:
+            function()
 
     def add_accelerometer_data(self, x, y, z):
         frequency = self.get_frequency(x, y, z)

@@ -13,9 +13,9 @@ class IPlanPy(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.wiimote = None
-        self.my_vector_transform = VectorTransform(self.size().width(), self.size().height())
+        self.my_vector_transform = VectorTransform()
         self.classifier = GestureClassifier()
-        self.classifier.register_observer(self)
+        self.classifier.register_callback(self.handle_shake_gesture)
         self.setMouseTracking(True)
         self.bg_colors = ['background-color: blue', 'background-color: red', 'background-color: green']
         self.init_ui()
@@ -41,6 +41,8 @@ class IPlanPy(QtWidgets.QWidget):
         for mote in results:
             address, name = mote
             self.ui.list_available_wiimotes.addItem(address)
+        if len(results) > 0:
+            self.ui.list_available_wiimotes.setCurrentRow(0)
         self.ui.btn_scan_wiimotes.setText("Scan")
 
     def toggle_wiimote_connection(self):
@@ -71,6 +73,7 @@ class IPlanPy(QtWidgets.QWidget):
                     self.wiimote.ir.register_callback(self.on_wiimote_ir)
                     self.wiimote.accelerometer.register_callback(self.on_wiimote_accelerometer)
                     self.wiimote.rumble()
+                    self.ui.fr_connection.setVisible(False)
 
     def disconnect_wiimote(self):
         self.wiimote.disconnect()
@@ -91,7 +94,7 @@ class IPlanPy(QtWidgets.QWidget):
             vectors = []
             for e in event:
                 vectors.append((e["x"], e["y"]))
-            x, y = self.my_vector_transform.transform(vectors)
+            x, y = self.my_vector_transform.transform(vectors, self.size().width(), self.size().height())
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
 
     def on_wiimote_accelerometer(self, event):

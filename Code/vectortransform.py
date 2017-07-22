@@ -7,14 +7,13 @@ from numpy import *
 
 
 class VectorTransform:
-    def __init__(self, x_size, y_size):
+    def __init__(self):
         super().__init__()
+
+    def transform(self, vectors, x_size, y_size):
         self.DEST_W = x_size
         self.DEST_H = y_size
-
-    def transform(self, vectors):
         vectors = self.get_ordered_vectors(vectors)
-        print(vectors)
         sx1, sy1 = vectors[0]
         sx2, sy2 = vectors[1]
         sx3, sy3 = vectors[2]
