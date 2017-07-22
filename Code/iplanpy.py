@@ -4,7 +4,7 @@
 
 import sys
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QWidget, QFrame, QLineEdit, QPlainTextEdit
+from PyQt5.QtWidgets import QApplication, QWidget
 import wiimote
 from vectortransform import VectorTransform
 from gestureclassifier import GestureClassifier
@@ -51,7 +51,6 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui.btn_scan_wiimotes.clicked.connect(self.scan_for_wiimotes)
         self.ui.btn_toggle_connection_frame.clicked.connect(self.toggle_connection_frame)
 
-        self.ui.new_card.clicked.connect(self.make_new_card)
         self.ui.delete_card.setVisible(True)
 
         self.all_cards.append(self.ui.fr_card)
@@ -140,16 +139,21 @@ class IPlanPy(QtWidgets.QWidget):
                 self.fr_card.setStyleSheet(self.bg_colors[2])
             else:
                 self.fr_card.setStyleSheet(self.bg_colors[0])
+
         self.__mousePressPos = None
         self.__mouseMovePos = None
         if event.button() == QtCore.Qt.LeftButton:
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
+            if self.ui.lbl_new_card.underMouse():
+                self.make_new_card(event)
         # super(IPlanPy, self).mousePressEvent(event)
         # print("mousePressEvent" + str(self.__mousePressPos) + ' ' + str(self.__mouseMovePos))
 
     def mouseMoveEvent(self, event):
         if event.buttons() & QtCore.Qt.LeftButton:
+            print("mouse move")
+            print(len(self.all_cards))
             card_under_mouse = self.get_card_under_mouse()
             if card_under_mouse is not None:
                 card_under_mouse.setGeometry(event.pos().x(), event.pos().y(),
@@ -163,11 +167,10 @@ class IPlanPy(QtWidgets.QWidget):
             self.__mouseMovePos = globalPos
 
     def get_card_under_mouse(self):
-        card = None
         for c in self.all_cards:
             if c.underMouse() is True:
-                card = c
-        return card
+                return c
+        return None
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
@@ -185,10 +188,13 @@ class IPlanPy(QtWidgets.QWidget):
 
         if event.type() == QtCore.QEvent.HoverMove:
             print('hover' + str(event))
-            self.new_card.setStyleSheet('background-color: blue')
+            self.lbl_new_card.setStyleSheet('background-color: blue')
 
-    def make_new_card(self):
-        self.all_cards.append(Card(self))
+    def make_new_card(self, event):
+        card = Card(self)
+        card.setGeometry(event.pos().x() - 10, event.pos().y() - 10, card.size().width(), card.size().height())
+        self.all_cards.append(card)
+        print("make new card")
 
     def register_if_deleted(self, posX, posY):
         delete_button_pos_x1 = self.delete_card.x()

@@ -144,24 +144,6 @@
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="new_card">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>370</y>
-     <width>91</width>
-     <height>91</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton:hover#new_card {
-	background-color: green
-}</string>
-   </property>
-   <property name="text">
-    <string>New Card</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="delete_card">
    <property name="geometry">
     <rect>
@@ -180,11 +162,39 @@
     <string>Delete X</string>
    </property>
   </widget>
+  <widget class="QLabel" name="lbl_new_card">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>360</y>
+     <width>101</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel:hover#lbl_new_card {
+	background-color: green;
+	color: white
+}</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <property name="text">
+    <string>New Card</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
   <zorder>delete_card</zorder>
-  <zorder>new_card</zorder>
   <zorder>fr_connection</zorder>
   <zorder>btn_toggle_connection_frame</zorder>
   <zorder>fr_card</zorder>
+  <zorder>lbl_new_card</zorder>
  </widget>
  <resources/>
  <connections/>
