@@ -4,7 +4,7 @@
 
 import sys
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QFrame, QApplication
+from PyQt5.QtWidgets import QApplication, QWidget, QFrame, QLineEdit, QPlainTextEdit
 import wiimote
 from vectortransform import VectorTransform
 from gestureclassifier import GestureClassifier
@@ -19,7 +19,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.classifier = GestureClassifier()
         self.classifier.register_callback(self.handle_shake_gesture)
         self.setMouseTracking(True)
-        self.bg_colors = ['background-color: blue', 'background-color: red', 'background-color: green']
+        self.bg_colors = ['background-color: rgb(85, 170, 255)', 'background-color: red', 'background-color: green']
         self.init_ui()
         self.display_known_wiimotes()
 
@@ -126,9 +126,11 @@ class IPlanPy(QtWidgets.QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.RightButton:
-            style = str(self.fr_card.styleSheet())
+            pos = QtGui.QCursor.pos()
+            widget_at = QApplication.widgetAt(pos)
+            style = str(widget_at.styleSheet())
             print(style)
-            if 'blue' in style:
+            if 'rgb(85, 170, 255)' in style:
                 self.fr_card.setStyleSheet(self.bg_colors[1])
             elif 'red' in style:
                 self.fr_card.setStyleSheet(self.bg_colors[2])
@@ -140,13 +142,18 @@ class IPlanPy(QtWidgets.QWidget):
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
         # super(IPlanPy, self).mousePressEvent(event)
-        print("mousePressEvent" + str(self.__mousePressPos) + ' ' + str(self.__mouseMovePos))
+        # print("mousePressEvent" + str(self.__mousePressPos) + ' ' + str(self.__mouseMovePos))
 
     def mouseMoveEvent(self, event):
         if event.buttons() & QtCore.Qt.LeftButton:
             if self.ui.fr_card.underMouse() is True:
                 self.ui.fr_card.setGeometry(event.pos().x(), event.pos().y(),
                                             self.ui.fr_card.size().width(), self.ui.fr_card.size().height())
+            else:
+                widget_at = QApplication.widgetAt(QtGui.QCursor.pos())
+                if widget_at.underMouse() is True:
+                    widget_at.setGeometry(event.pos().x(), event.pos().y(),
+                                          widget_at.size().width(), widget_at.size().height())
 
         if event.buttons() == QtCore.Qt.LeftButton:
             currPos = self.mapToGlobal(self.pos())
@@ -174,18 +181,35 @@ class IPlanPy(QtWidgets.QWidget):
             self.new_card.setStyleSheet('background-color: blue')
 
     def make_new_card(self):
-        print("new card!")
+        self.new_frame = QFrame(self)
+        self.new_frame.setStyleSheet('background-color: rgb(85, 170, 255)')
+        self.new_frame.resize(281, 181)
+        self.new_frame.setVisible(True)
+
+        self.new_title = QLineEdit(self)
+        self.new_title.resize(131, 29)
+        self.new_title.move(72, 10)
+        self.new_title.setParent(self.new_frame)
+        self.new_title.setStyleSheet('background-color: white')
+        self.new_title.setVisible(True)
+
+        self.new_text_edit = QPlainTextEdit(self)
+        self.new_text_edit.resize(261, 121)
+        self.new_text_edit.move(10, 50)
+        self.new_text_edit.setParent(self.new_frame)
+        self.new_text_edit.setStyleSheet('background-color: white')
+        self.new_text_edit.setVisible(True)
+
+        self.new_frame.setMouseTracking(True)
+
+        self.show()
 
     def register_if_deleted(self, posX, posY):
         delete_button_pos_x1 = self.delete_card.x()
         delete_button_pos_x2 = delete_button_pos_x1 + self.delete_card.width()
         delete_button_pos_y1 = self.delete_card.y()
         delete_button_pos_y2 = delete_button_pos_y1 + self.delete_card.height()
-        print('pos' + str(posX), str(posY))
-        print('buttonpos' + str(delete_button_pos_x1), str(delete_button_pos_x2), str(delete_button_pos_y1), str(delete_button_pos_y2))
         if(posX >= delete_button_pos_x1 and posX <= delete_button_pos_x2 and posY >= delete_button_pos_y1 and posY <= delete_button_pos_y2):
-            print('DELETE!')
-            # self.fr_card.setParent(None)
             pos = QtGui.QCursor.pos()
             widget_at = QApplication.widgetAt(pos)
             widget_at.setParent(None)
