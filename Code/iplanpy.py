@@ -12,6 +12,7 @@ from gestureclassifier import GestureClassifier
 class IPlanPy(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        self.CONNECTIONS_FILE = "wii.motes"
         self.wiimote = None
         self.my_vector_transform = VectorTransform()
         self.classifier = GestureClassifier()
@@ -19,6 +20,27 @@ class IPlanPy(QtWidgets.QWidget):
         self.setMouseTracking(True)
         self.bg_colors = ['background-color: blue', 'background-color: red', 'background-color: green']
         self.init_ui()
+        self.display_known_wiimotes()
+
+    def display_known_wiimotes(self):
+        content = self.get_all_known_connections()
+        for address in content:
+            self.ui.list_available_wiimotes.addItem(address)
+        if len(content) > 0:
+            self.ui.list_available_wiimotes.setCurrentRow(0)
+
+    def save_connection_address(self, address):
+        content = self.get_all_known_connections()
+        if address not in content:
+            with open(self.CONNECTIONS_FILE, "a") as f:
+                f.write("\n" + address)
+                f.close()
+
+    def get_all_known_connections(self):
+        with open(self.CONNECTIONS_FILE) as f:
+            content = f.readlines()
+            f.close()
+        return [x.strip() for x in content]
 
     def init_ui(self):
         self.ui = uic.loadUi("iplanpy.ui", self)
@@ -74,6 +96,7 @@ class IPlanPy(QtWidgets.QWidget):
                     self.wiimote.accelerometer.register_callback(self.on_wiimote_accelerometer)
                     self.wiimote.rumble()
                     self.ui.fr_connection.setVisible(False)
+                    self.save_connection_address(address)
 
     def disconnect_wiimote(self):
         self.wiimote.disconnect()
