@@ -4,6 +4,7 @@
 
 import sys
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
+from PyQt5.QtWidgets import QFrame, QApplication
 import wiimote
 from vectortransform import VectorTransform
 from gestureclassifier import GestureClassifier
@@ -184,7 +185,10 @@ class IPlanPy(QtWidgets.QWidget):
         print('buttonpos' + str(delete_button_pos_x1), str(delete_button_pos_x2), str(delete_button_pos_y1), str(delete_button_pos_y2))
         if(posX >= delete_button_pos_x1 and posX <= delete_button_pos_x2 and posY >= delete_button_pos_y1 and posY <= delete_button_pos_y2):
             print('DELETE!')
-            self.fr_card.setParent(None)
+            # self.fr_card.setParent(None)
+            pos = QtGui.QCursor.pos()
+            widget_at = QApplication.widgetAt(pos)
+            widget_at.setParent(None)
 
     def handle_shake_gesture(self):
         print("shake detected")
