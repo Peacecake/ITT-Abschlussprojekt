@@ -51,3 +51,9 @@ class Card(QFrame):
             return True
         else:
             return False
+
+    def hits_window_frame(self, window_frame, new_x, new_y):
+        if new_y <= 0 or new_y + self.size().height() >= window_frame.size().height() and new_x >= 0 or new_x + self.size().width() >= window_frame.size().width():
+            return True
+        else:
+            return False
