@@ -2,7 +2,7 @@
 # coding: utf-8
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtWidgets import QFrame, QLineEdit, QPlainTextEdit
+from PyQt5.QtWidgets import QFrame, QLineEdit, QTextEdit
 
 
 class Card(QFrame):
@@ -10,7 +10,7 @@ class Card(QFrame):
         super(Card, self).__init__()
         self.setParent(parent)
         self.title_field = QLineEdit()
-        self.content_field = QPlainTextEdit()
+        self.content_field = QTextEdit()
         self.setup_frame()
         self.setup_title()
         self.setup_content()
@@ -34,3 +34,7 @@ class Card(QFrame):
         self.content_field.setParent(self)
         self.content_field.setStyleSheet('background-color: white')
         self.content_field.setVisible(True)
+
+    def delete(self):
+        self.setParent(None)
+        # Todo: remove connections

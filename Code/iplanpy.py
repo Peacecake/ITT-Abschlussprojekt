@@ -3,6 +3,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
+import ast
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QApplication, QWidget
 import wiimote
@@ -23,6 +25,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.all_cards = []
         self.bg_colors = ['background-color: rgb(85, 170, 255)', 'background-color: red', 'background-color: green']
         self.init_ui()
+        self.load_available_charts()
         self.display_known_wiimotes()
 
     def display_known_wiimotes(self):
@@ -47,18 +50,101 @@ class IPlanPy(QtWidgets.QWidget):
 
     def init_ui(self):
         self.ui = uic.loadUi("iplanpy.ui", self)
+        self.ui.fr_save_and_load.setVisible(False)
         self.ui.btn_connect_wiimote.clicked.connect(self.toggle_wiimote_connection)
         self.ui.btn_scan_wiimotes.clicked.connect(self.scan_for_wiimotes)
         self.ui.btn_toggle_connection_frame.clicked.connect(self.toggle_connection_frame)
+        self.ui.btn_toggle_save_and_load_frame.clicked.connect(self.toggle_save_and_load_frame)
+        self.ui.btn_load_chart.clicked.connect(self.load_chart)
+        self.ui.btn_save.clicked.connect(self.on_btn_save_chart)
 
         self.ui.delete_card.setVisible(True)
-
-        self.all_cards.append(self.ui.fr_card)
 
         self.show()
 
     def toggle_connection_frame(self, event):
-        self.ui.fr_connection.setVisible(not self.ui.fr_connection.isVisible())
+        value = not self.ui.fr_connection.isVisible()
+        self.ui.fr_connection.setVisible(value)
+        if value is True:
+            self.ui.fr_connection.raise_()
+            self.ui.fr_save_and_load.setVisible(not value)
+        else:
+            self.ui.fr_connection.lower()
+
+    def toggle_save_and_load_frame(self, event):
+        value = not self.ui.fr_save_and_load.isVisible()
+        self.ui.fr_save_and_load.setVisible(value)
+        if value is True:
+            self.ui.fr_save_and_load.raise_()
+            self.ui.fr_connection.setVisible(not value)
+        else:
+            self.ui.fr_save_and_load.lower()
+
+    def load_chart(self, event):
+        file_name = self.ui.list_chart_selection.currentItem()
+        if file_name is not None:
+            card_infos = self.get_card_info_from_file(file_name.text())
+            if card_infos is not None:
+                self.remove_all_cards()
+                self.create_card_from_file(card_infos)
+                self.toggle_save_and_load_frame(None)
+
+    def create_card_from_file(self, card_infos):
+        for info in card_infos:
+            info = info.split(";")
+            card = Card(self)
+            card.title_field.setText(info[0])
+            card.content_field.setText(ast.literal_eval(info[1]))
+            card.setGeometry(int(info[2]), int(info[3]), card.size().width(), card.size().height())
+            self.all_cards.append(card)
+
+    def get_card_info_from_file(self, file_name):
+        try:
+            with open(file_name) as file:
+                return file.readlines()
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Could not load chart!\nAdditional information:\n" + e)
+            return None
+
+    def remove_all_cards(self):
+        for card in self.all_cards:
+            card.delete()
+        self.all_cards.clear()
+
+    def on_btn_save_chart(self, event):
+        file_name = self.ui.le_save_as.text()
+        if file_name is not "":
+            if os.path.isfile(file_name + ".chart") is True:
+                res = QtWidgets.QMessageBox.question(self, "Warning", "Overwrite existing file?", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+                if res == QtWidgets.QMessageBox.Yes:
+                    self.save_chart(file_name)
+                else:
+                    return
+            else:
+                self.save_chart(file_name)
+                QtWidgets.QMessageBox.information(self, "Success", "Chart saved!")
+        else:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Choose a name first!")
+
+    def save_chart(self, file_name):
+        self.ui.le_save_as.setText("")
+        with open(file_name + ".chart", "w") as new_file:
+            self.write_card_data(new_file)
+        self.load_available_charts()
+
+    def write_card_data(self, file):
+        for card in self.all_cards:
+            title = card.title_field.text()
+            content = repr(card.content_field.toPlainText())
+            x_pos = card.pos().x()
+            y_pos = card.pos().y()
+            file.write(title + ";" + content + ";" + str(x_pos) + ";" + str(y_pos) + ";\n")
+
+    def load_available_charts(self):
+        self.ui.list_chart_selection.clear()
+        for file in os.listdir(os.getcwd()):
+            if file.endswith(".chart"):
+                self.ui.list_chart_selection.addItem(file)
 
     def scan_for_wiimotes(self, event):
         self.ui.btn_scan_wiimotes.setText("Scanning...")
@@ -152,8 +238,6 @@ class IPlanPy(QtWidgets.QWidget):
 
     def mouseMoveEvent(self, event):
         if event.buttons() & QtCore.Qt.LeftButton:
-            print("mouse move")
-            print(len(self.all_cards))
             card_under_mouse = self.get_card_under_mouse()
             if card_under_mouse is not None:
                 card_under_mouse.setGeometry(event.pos().x(), event.pos().y(),
@@ -194,7 +278,6 @@ class IPlanPy(QtWidgets.QWidget):
         card = Card(self)
         card.setGeometry(event.pos().x() - 10, event.pos().y() - 10, card.size().width(), card.size().height())
         self.all_cards.append(card)
-        print("make new card")
 
     def register_if_deleted(self, posX, posY):
         delete_button_pos_x1 = self.delete_card.x()
@@ -203,7 +286,7 @@ class IPlanPy(QtWidgets.QWidget):
         delete_button_pos_y2 = delete_button_pos_y1 + self.delete_card.height()
         if delete_button_pos_x2 >= posX >= delete_button_pos_x1 and delete_button_pos_y1 <= posY <= delete_button_pos_y2:
             card = self.get_card_under_mouse()
-            card.setParent(None)
+            card.delete()
             self.all_cards.remove(card)
 
     def handle_shake_gesture(self):

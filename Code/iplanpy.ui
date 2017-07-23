@@ -30,6 +30,9 @@
      <height>291</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
    </property>
@@ -99,51 +102,6 @@
     <string>Connection Settings</string>
    </property>
   </widget>
-  <widget class="QFrame" name="fr_card">
-   <property name="geometry">
-    <rect>
-     <x>540</x>
-     <y>140</y>
-     <width>281</width>
-     <height>181</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(85, 170, 255)</string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <widget class="QLineEdit" name="le_title">
-    <property name="geometry">
-     <rect>
-      <x>72</x>
-      <y>10</y>
-      <width>131</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255)</string>
-    </property>
-   </widget>
-   <widget class="QPlainTextEdit" name="pte_description">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>261</width>
-      <height>121</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255)</string>
-    </property>
-   </widget>
-  </widget>
   <widget class="QPushButton" name="delete_card">
    <property name="geometry">
     <rect>
@@ -190,11 +148,100 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
+  <widget class="QPushButton" name="btn_toggle_save_and_load_frame">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>0</y>
+     <width>121</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save / Load</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="fr_save_and_load">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>30</y>
+     <width>251</width>
+     <height>301</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QLabel" name="lbl_load_title">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>171</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Available charts:</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="list_chart_selection">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>231</width>
+      <height>161</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_load_chart">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>231</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Load</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="le_save_as">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>260</y>
+      <width>141</width>
+      <height>29</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_save">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>260</y>
+      <width>81</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save</string>
+    </property>
+   </widget>
+  </widget>
+  <zorder>fr_save_and_load</zorder>
   <zorder>delete_card</zorder>
   <zorder>fr_connection</zorder>
   <zorder>btn_toggle_connection_frame</zorder>
-  <zorder>fr_card</zorder>
   <zorder>lbl_new_card</zorder>
+  <zorder>btn_toggle_save_and_load_frame</zorder>
  </widget>
  <resources/>
  <connections/>
