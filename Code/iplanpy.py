@@ -129,16 +129,15 @@ class IPlanPy(QtWidgets.QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.RightButton:
-            pos = QtGui.QCursor.pos()
-            widget_at = QApplication.widgetAt(pos)
-            style = str(widget_at.styleSheet())
+            curr_card = self.get_card_under_mouse()
+            style = str(curr_card.styleSheet())
             print(style)
             if 'rgb(85, 170, 255)' in style:
-                self.fr_card.setStyleSheet(self.bg_colors[1])
+                curr_card.setStyleSheet(self.bg_colors[1])
             elif 'red' in style:
-                self.fr_card.setStyleSheet(self.bg_colors[2])
+                curr_card.setStyleSheet(self.bg_colors[2])
             else:
-                self.fr_card.setStyleSheet(self.bg_colors[0])
+                curr_card.setStyleSheet(self.bg_colors[0])
 
         self.__mousePressPos = None
         self.__mouseMovePos = None
