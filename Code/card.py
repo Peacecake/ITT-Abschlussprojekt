@@ -41,3 +41,13 @@ class Card(QFrame):
 
     def move_to(self, x, y):
         self.setGeometry(x, y, self.size().width(), self.size().height())
+
+    def collides_with(self, widget, new_x, new_y):
+        x1 = widget.pos().x()
+        x2 = x1 + widget.size().width()
+        y1 = widget.pos().y()
+        y2 = y1 + widget.size().height()
+        if x1 <= new_x <= x2 and y1 <= new_y <= y2:
+            return True
+        else:
+            return False

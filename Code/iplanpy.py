@@ -263,18 +263,11 @@ class IPlanPy(QtWidgets.QWidget):
     def handle_card_movement(self, mouse_event, card):
         new_x = card.pos().x() + mouse_event.pos().x() - self.old_x_coord
         new_y = card.pos().y() + mouse_event.pos().y() - self.old_y_coord
-        if not self.check_for_collide(new_x, new_y):
+        if not card.collides_with(self.ui.fr_control_container, new_x, new_y):
             card.move_to(new_x, new_y)
-
-    def check_for_collide(self, x, y):
-        fr_x1 = self.ui.fr_control_container.pos().x()
-        fr_x2 = fr_x1 + self.ui.fr_control_container.size().width()
-        fr_y1 = self.ui.fr_control_container.pos().y()
-        fr_y2 = fr_y1 + self.ui.fr_control_container.size().height()
-        if fr_x1 <= x <= fr_x2 and fr_y1 <= y <= fr_y2:
-            return True
         else:
-            return False
+            # Doesnt work yet
+            QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.old_x_coord, self.old_y_coord)))
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
