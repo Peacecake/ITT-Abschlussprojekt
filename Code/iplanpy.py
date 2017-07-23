@@ -6,7 +6,7 @@ import sys
 import os
 import ast
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QMessageBox
 import wiimote
 from vectortransform import VectorTransform
 from gestureclassifier import GestureClassifier
@@ -105,7 +105,7 @@ class IPlanPy(QtWidgets.QWidget):
             with open(file_name) as file:
                 return file.readlines()
         except Exception as e:
-            QtWidgets.QMessageBox.warning(self, "Warning", "Could not load chart!\nAdditional information:\n" + e)
+            QMessageBox.warning(self, "Warning", "Could not load chart!\nAdditional information:\n" + e)
             return None
 
     def remove_all_cards(self):
@@ -117,16 +117,17 @@ class IPlanPy(QtWidgets.QWidget):
         file_name = self.ui.le_save_as.text()
         if file_name is not "":
             if os.path.isfile(file_name + ".chart") is True:
-                res = QtWidgets.QMessageBox.question(self, "Warning", "Overwrite existing file?", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
-                if res == QtWidgets.QMessageBox.Yes:
+                msg = "Overwrite existing file?"
+                res = QMessageBox.question(self, "Warning", msg, QMessageBox.Yes, QMessageBox.No)
+                if res == QMessageBox.Yes:
                     self.save_chart(file_name)
                 else:
                     return
             else:
                 self.save_chart(file_name)
-                QtWidgets.QMessageBox.information(self, "Success", "Chart saved!")
+                QMessageBox.information(self, "Success", "Chart saved!")
         else:
-            QtWidgets.QMessageBox.warning(self, "Warning", "Choose a name first!")
+            QMessageBox.warning(self, "Warning", "Choose a name first!")
 
     def save_chart(self, file_name):
         self.ui.le_save_as.setText("")
@@ -174,7 +175,7 @@ class IPlanPy(QtWidgets.QWidget):
                 try:
                     self.wiimote = wiimote.connect(address)
                 except Exception:
-                    QtWidgets.QMessageBox.critical(self, "Error", "Could not connect to " + address + "!")
+                    QMessageBox.critical(self, "Error", "Could not connect to " + address + "!")
                     self.ui.btn_connect_wiimote.setText("Connect")
                     return
 
