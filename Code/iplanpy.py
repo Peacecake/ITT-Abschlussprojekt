@@ -18,6 +18,8 @@ class IPlanPy(QtWidgets.QWidget):
         super().__init__()
         self.CONNECTIONS_FILE = "wii.motes"
         self.wiimote = None
+        self.old_x_coord = 0
+        self.old_y_coord = 0
         self.my_vector_transform = VectorTransform()
         self.classifier = GestureClassifier()
         self.classifier.register_callback(self.handle_shake_gesture)
@@ -239,7 +241,9 @@ class IPlanPy(QtWidgets.QWidget):
         if event.buttons() & QtCore.Qt.LeftButton:
             card_under_mouse = self.get_card_under_mouse()
             if card_under_mouse is not None:
-                card_under_mouse.setGeometry(event.pos().x(), event.pos().y(),
+                new_x = card_under_mouse.pos().x() + event.pos().x() - self.old_x_coord
+                new_y = card_under_mouse.pos().y() + event.pos().y() - self.old_y_coord
+                card_under_mouse.setGeometry(new_x, new_y,
                                              card_under_mouse.size().width(), card_under_mouse.size().height())
 
         if event.buttons() == QtCore.Qt.LeftButton:
@@ -248,6 +252,9 @@ class IPlanPy(QtWidgets.QWidget):
             diff = globalPos - self.__mouseMovePos
             newPos = self.mapFromGlobal(currPos + diff)
             self.__mouseMovePos = globalPos
+
+        self.old_y_coord = event.pos().y()
+        self.old_x_coord = event.pos().x()
 
     def get_card_under_mouse(self):
         for c in self.all_cards:
