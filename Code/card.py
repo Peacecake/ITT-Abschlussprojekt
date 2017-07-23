@@ -38,3 +38,6 @@ class Card(QFrame):
     def delete(self):
         self.setParent(None)
         # Todo: remove connections
+
+    def move_to(self, x, y):
+        self.setGeometry(x, y, self.size().width(), self.size().height())

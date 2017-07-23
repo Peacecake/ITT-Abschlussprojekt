@@ -242,10 +242,7 @@ class IPlanPy(QtWidgets.QWidget):
         if event.buttons() & QtCore.Qt.LeftButton:
             card_under_mouse = self.get_card_under_mouse()
             if card_under_mouse is not None:
-                new_x = card_under_mouse.pos().x() + event.pos().x() - self.old_x_coord
-                new_y = card_under_mouse.pos().y() + event.pos().y() - self.old_y_coord
-                card_under_mouse.setGeometry(new_x, new_y,
-                                             card_under_mouse.size().width(), card_under_mouse.size().height())
+                self.handle_card_movement(event, card_under_mouse)
 
         if event.buttons() == QtCore.Qt.LeftButton:
             currPos = self.mapToGlobal(self.pos())
@@ -262,6 +259,22 @@ class IPlanPy(QtWidgets.QWidget):
             if c.underMouse() is True:
                 return c
         return None
+
+    def handle_card_movement(self, mouse_event, card):
+        new_x = card.pos().x() + mouse_event.pos().x() - self.old_x_coord
+        new_y = card.pos().y() + mouse_event.pos().y() - self.old_y_coord
+        if not self.check_for_collide(new_x, new_y):
+            card.move_to(new_x, new_y)
+
+    def check_for_collide(self, x, y):
+        fr_x1 = self.ui.fr_control_container.pos().x()
+        fr_x2 = fr_x1 + self.ui.fr_control_container.size().width()
+        fr_y1 = self.ui.fr_control_container.pos().y()
+        fr_y2 = fr_y1 + self.ui.fr_control_container.size().height()
+        if fr_x1 <= x <= fr_x2 and fr_y1 <= y <= fr_y2:
+            return True
+        else:
+            return False
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
@@ -283,7 +296,8 @@ class IPlanPy(QtWidgets.QWidget):
 
     def make_new_card(self, event):
         card = Card(self)
-        card.setGeometry(event.pos().x() - 10, event.pos().y() - 10, card.size().width(), card.size().height())
+        new_y = self.ui.fr_control_container.size().height()
+        card.setGeometry(event.pos().x(), new_y, card.size().width(), card.size().height())
         self.all_cards.append(card)
 
     def register_if_deleted(self, posX, posY):
