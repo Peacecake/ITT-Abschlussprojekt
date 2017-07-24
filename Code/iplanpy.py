@@ -60,8 +60,6 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui.btn_load_chart.clicked.connect(self.load_chart)
         self.ui.btn_save.clicked.connect(self.on_btn_save_chart)
 
-        self.ui.delete_card.setVisible(True)
-
         self.show()
 
     def toggle_connection_frame(self, event):
@@ -300,8 +298,9 @@ class IPlanPy(QtWidgets.QWidget):
         delete_button_pos_y2 = delete_button_pos_y1 + self.delete_card.height()
         if delete_button_pos_x2 >= posX >= delete_button_pos_x1 and delete_button_pos_y1 <= posY <= delete_button_pos_y2:
             card = self.get_card_under_mouse()
-            card.delete()
-            self.all_cards.remove(card)
+            if not 'NoneType':
+                card.delete()
+                self.all_cards.remove(card)
 
     def handle_shake_gesture(self):
         print("shake detected")
