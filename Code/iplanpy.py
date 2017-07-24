@@ -214,9 +214,10 @@ class IPlanPy(QtWidgets.QWidget):
                     # card.setGeometry(0, new_y, card.size().width(), card.size().height())
                     # self.all_cards.append(card)
                 if button == 'B' and (self.get_card_under_mouse() is not None):
-                    print('Color changed with Wii')
-                    print(str(self.get_card_under_mouse()))
-                    self.changeColor(self.get_card_under_mouse())
+                    self.get_card_under_mouse().next_color()
+                    # print('Color changed with Wii')
+                    # print(str(self.get_card_under_mouse()))
+                    # self.changeColor(self.get_card_under_mouse())
             else:
                 print("Button " + button + " is released")
 
@@ -261,13 +262,13 @@ class IPlanPy(QtWidgets.QWidget):
             else:
                 curr_card.setStyleSheet(self.bg_colors[0])
         '''
-            print(self)
-            self.changeColor(self.get_card_under_mouse())
+            self.get_card_under_mouse().next_color()
+            # self.changeColor(self.get_card_under_mouse())
 
         self.__mousePressPos = None
         self.__mouseMovePos = None
 
-        if event == "A":
+        if event == "A" or event.button() == QtCore.Qt.LeftButton:
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
             if self.ui.lbl_new_card.underMouse():
@@ -320,8 +321,8 @@ class IPlanPy(QtWidgets.QWidget):
 
     def make_new_card(self, event):
         card = Card(self)
-        new_y = self.ui.fr_control_container.size().height()
-        card.moveTo(event.pos().x(), new_y)
+        new_y = self.ui.fr_control_container.size().height() + 3
+        card.move_to(event.pos().x(), new_y)
         self.all_cards.append(card)
 
     def register_if_deleted(self, posX, posY):
@@ -342,6 +343,7 @@ class IPlanPy(QtWidgets.QWidget):
         current_card = self.get_card_under_mouse()
         if current_card is not None:
             for i in range(len(self.all_cards)):
+                '''
                 card_w = self.all_cards[i].width()
                 card_h = self.all_cards[i].height()
                 card_pos_x1 = self.all_cards[i].x()
@@ -349,13 +351,14 @@ class IPlanPy(QtWidgets.QWidget):
                 card_pos_y1 = self.all_cards[i].y()
                 card_pos_y2 = card_pos_y1 + card_h
                 if(posX >= card_pos_x1 and posX <= card_pos_x2 and posY >= card_pos_y1 and posY <= card_pos_y2):
-                    start_card_middle = current_card.pos().x() + current_card.width() / 2, current_card.pos().y() + current_card.height() / 2
-                    target_card_middle = self.all_cards[i].x() + self.all_cards[i].width() / 2, self.all_cards[i].y() + self.all_cards[i].height() / 2
-                    new_line = start_card_middle, target_card_middle
+                '''
+                if current_card.collides_with(self.all_cards[i], current_card.pos().x(), current_card.pos().y()):
+                    new_line = current_card.center(), self.all_cards[i].center()
                     print(str(new_line))
                     self.all_lines.append(new_line)
-                    current_card.setStyleSheet('background-color: rgb(85, 170, 255); border: 1px solid black')
-                    self.all_cards[i].setStyleSheet('background-color: rgb(85, 170, 255); border: 1px solid black')
+                    border = "1px solid black"
+                    current_card.set_border(border)
+                    self.all_cards[i].set_border(border)
                     self.update()
 
     def paintEvent(self, event):
