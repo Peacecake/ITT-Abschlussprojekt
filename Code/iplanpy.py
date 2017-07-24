@@ -7,6 +7,7 @@ import os
 import ast
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtGui import QPainter, QColor, QPen
 import wiimote
 from vectortransform import VectorTransform
 from gestureclassifier import GestureClassifier
@@ -25,6 +26,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.classifier.register_callback(self.handle_shake_gesture)
         self.setMouseTracking(True)
         self.all_cards = []
+        self.all_lines = []
         self.bg_colors = ['background-color: rgb(85, 170, 255)', 'background-color: red', 'background-color: green']
         self.init_ui()
         self.load_available_charts()
@@ -270,10 +272,14 @@ class IPlanPy(QtWidgets.QWidget):
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
             moved = event.globalPos() - self.__mousePressPos
-            self.register_if_deleted(event.pos().x(), event.pos().y())
+            self.check_release_pos(event.pos().x(), event.pos().y())
             if moved.manhattanLength() > 3:
                 event.ignore()
                 return
+    
+    def check_release_pos(self, posX, posY):
+        self.register_if_deleted(posX, posY)
+        self.register_if_drawline(posX, posY)
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_B:
@@ -299,6 +305,40 @@ class IPlanPy(QtWidgets.QWidget):
                 self.all_cards.remove(card)
             except:
                 print('That did not work!')
+
+    def register_if_drawline(self, posX, posY):
+        print('register drawline')
+        current_card = self.get_card_under_mouse()
+        if current_card is not None:
+            for i in range(len(self.all_cards)):
+                card_w = self.all_cards[i].width()
+                card_h = self.all_cards[i].height()
+                card_pos_x1 = self.all_cards[i].x()
+                card_pos_x2 = card_pos_x1 + card_w
+                card_pos_y1 = self.all_cards[i].y()
+                card_pos_y2 = card_pos_y1 + card_h
+                if(posX >= card_pos_x1 and posX <= card_pos_x2 and posY >= card_pos_y1 and posY <= card_pos_y2):
+                    start_card_middle = current_card.pos().x() + current_card.width()/2, current_card.pos().y() + current_card.height()/2
+                    target_card_middle = self.all_cards[i].x() + self.all_cards[i].width()/2, self.all_cards[i].y() + self.all_cards[i].height()/2
+                    new_line = start_card_middle, target_card_middle
+                    print(str(new_line))
+                    self.all_lines.append(new_line)
+                    self.update()
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter()
+        painter.begin(self)
+        pen = QPen()
+        pen.setWidth(3)
+        pen.setColor(QColor(0, 0, 0))
+        painter.setPen(pen)
+        for i in range(len(self.all_lines)):
+            start, target = self.all_lines[i]
+            x1, y1 = start
+            x2, y2 = target
+            print(str(start) + '' + str(target))
+            painter.drawLine(x1, y1, x2, y2)
+        painter.end()
 
     def handle_shake_gesture(self):
         print("shake detected")
