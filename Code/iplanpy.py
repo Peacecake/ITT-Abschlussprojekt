@@ -281,10 +281,6 @@ class IPlanPy(QtWidgets.QWidget):
         if event.key() == QtCore.Qt.Key_A:
             print("Key A")
 
-        if event.type() == QtCore.QEvent.HoverMove:
-            print('hover' + str(event))
-            self.lbl_new_card.setStyleSheet('background-color: blue')
-
     def make_new_card(self, event):
         card = Card(self)
         new_y = self.ui.fr_control_container.size().height()
