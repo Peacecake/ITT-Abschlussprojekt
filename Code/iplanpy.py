@@ -281,12 +281,6 @@ class IPlanPy(QtWidgets.QWidget):
         self.register_if_deleted(posX, posY)
         self.register_if_drawline(posX, posY)
 
-    def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_B:
-            print("Key B")
-        if event.key() == QtCore.Qt.Key_A:
-            print("Key A")
-
     def make_new_card(self, event):
         card = Card(self)
         new_y = self.ui.fr_control_container.size().height()
