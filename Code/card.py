@@ -15,6 +15,7 @@ class Card(QFrame):
         self.color_index = 0
         self.color = self.available_colors[self.color_index]
         self.border = self.DEFAULT_BORDER
+        self.unfocued_border = "none"
         self.title_field = QLineEdit()
         self.content_field = QTextEdit()
         self.setup_frame()
@@ -61,6 +62,17 @@ class Card(QFrame):
     def delete(self):
         self.setParent(None)
         # Todo: remove connections
+
+    def focus(self):
+        print("focus")
+        self.unfocued_border = self.border
+        self.set_border("2px solid orange")
+        self.title_field.setFocus()
+        self.raise_()
+
+    def unfocus(self):
+        print("unfocus")
+        self.set_border(self.unfocued_border)
 
     def center(self):
         x = self.pos().x() + (self.size().width() / 2)

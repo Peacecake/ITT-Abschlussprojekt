@@ -202,7 +202,7 @@ class IPlanPy(QtWidgets.QWidget):
         if len(event) is not 0:
             button, is_pressed = event[0]
             if is_pressed:
-                if button == "A":
+                if button == "B":
                     mouse_press_event = QtGui.QMouseEvent(
                         QtCore.QEvent.MouseButtonPress,
                         self.mapFromGlobal(QtCore.QPoint(QtGui.QCursor.pos().x(), QtGui.QCursor.pos().y())),
@@ -213,6 +213,15 @@ class IPlanPy(QtWidgets.QWidget):
                 if button == 'Up' and (self.get_card_under_mouse() is not None):
                     self.get_card_under_mouse().next_color()
             else:
+                if button == "B":
+                    mouse_release_event = QtGui.QMouseEvent(
+                        QtCore.QEvent.MouseButtonRelease,
+                        self.mapFromGlobal(QtGui.QCursor.pos()),
+                        QtCore.Qt.LeftButton,
+                        QtCore.Qt.LeftButton,
+                        QtCore.Qt.NoModifier
+                    )
+                    QtCore.QCoreApplication.postEvent(self, mouse_release_event)
                 print("Button " + button + " is released")
 
     def on_wiimote_ir(self, event):
@@ -231,10 +240,17 @@ class IPlanPy(QtWidgets.QWidget):
         self.__mouseMovePos = None
 
         if event.button() == QtCore.Qt.LeftButton:
+            for c in self.all_cards:
+                c.unfocus()
+
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
             if self.ui.lbl_new_card.underMouse():
                 self.make_new_card(event)
+
+            card = self.get_card_under_mouse()
+            if card is not None:
+                card.focus()
         # super(IPlanPy, self).mousePressEvent(event)
         # print("mousePressEvent" + str(self.__mousePressPos) + ' ' + str(self.__mouseMovePos))
 
@@ -304,23 +320,16 @@ class IPlanPy(QtWidgets.QWidget):
         print('register drawline')
         current_card = self.get_card_under_mouse()
         if current_card is not None:
-            for i in range(len(self.all_cards)):
-                '''
-                card_w = self.all_cards[i].width()
-                card_h = self.all_cards[i].height()
-                card_pos_x1 = self.all_cards[i].x()
-                card_pos_x2 = card_pos_x1 + card_w
-                card_pos_y1 = self.all_cards[i].y()
-                card_pos_y2 = card_pos_y1 + card_h
-                if(posX >= card_pos_x1 and posX <= card_pos_x2 and posY >= card_pos_y1 and posY <= card_pos_y2):
-                '''
-                if current_card.collides_with(self.all_cards[i], current_card.pos().x(), current_card.pos().y()):
-                    new_line = current_card.center(), self.all_cards[i].center()
+            for c in self.all_cards:
+                if c is current_card:
+                    continue
+                if current_card.collides_with(c, current_card.pos().x(), current_card.pos().y()):
+                    new_line = current_card.center(), c.center()
                     print(str(new_line))
                     self.all_lines.append(new_line)
                     border = "1px solid black"
                     current_card.set_border(border)
-                    self.all_cards[i].set_border(border)
+                    c.set_border(border)
                     self.update()
 
     def paintEvent(self, event):
