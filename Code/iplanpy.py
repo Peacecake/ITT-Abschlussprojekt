@@ -18,6 +18,7 @@ class IPlanPy(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.CONNECTIONS_FILE = "wii.motes"
+        self.main_windows = self
         self.wiimote = None
         self.old_x_coord = 0
         self.old_y_coord = 0
@@ -201,9 +202,18 @@ class IPlanPy(QtWidgets.QWidget):
         if len(event) is not 0:
             button, is_pressed = event[0]
             if is_pressed:
+                if button == "A":
+                    self.on_wiimote_button_press()
                 print("Button " + button + " is pressed")
             else:
                 print("Button " + button + " is released")
+
+    def on_wiimote_button_press(self):
+        card = Card(self.main_windows)
+        new_y = self.ui.fr_control_container.size().height()
+        card.move_to(QtGui.QCursor.pos().x(), new_y)
+        self.all_cards.append(card)
+        print(self)
 
     def on_wiimote_ir(self, event):
         if len(event) is 4:
@@ -217,6 +227,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.classifier.add_accelerometer_data(event[0], event[1], event[2])
 
     def mousePressEvent(self, event):
+        '''
         if event.button() == QtCore.Qt.RightButton:
             curr_card = self.get_card_under_mouse()
             style = str(curr_card.styleSheet())
@@ -227,10 +238,12 @@ class IPlanPy(QtWidgets.QWidget):
                 curr_card.setStyleSheet(self.bg_colors[2])
             else:
                 curr_card.setStyleSheet(self.bg_colors[0])
-
+        '''
+        print(self)
         self.__mousePressPos = None
         self.__mouseMovePos = None
-        if event.button() == QtCore.Qt.LeftButton:
+
+        if event == "A":
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
             if self.ui.lbl_new_card.underMouse():
@@ -284,7 +297,7 @@ class IPlanPy(QtWidgets.QWidget):
     def make_new_card(self, event):
         card = Card(self)
         new_y = self.ui.fr_control_container.size().height()
-        card.setGeometry(event.pos().x(), new_y, card.size().width(), card.size().height())
+        card.moveTo(event.pos().x(), new_y)
         self.all_cards.append(card)
 
     def register_if_deleted(self, posX, posY):
@@ -312,8 +325,8 @@ class IPlanPy(QtWidgets.QWidget):
                 card_pos_y1 = self.all_cards[i].y()
                 card_pos_y2 = card_pos_y1 + card_h
                 if(posX >= card_pos_x1 and posX <= card_pos_x2 and posY >= card_pos_y1 and posY <= card_pos_y2):
-                    start_card_middle = current_card.pos().x() + current_card.width()/2, current_card.pos().y() + current_card.height()/2
-                    target_card_middle = self.all_cards[i].x() + self.all_cards[i].width()/2, self.all_cards[i].y() + self.all_cards[i].height()/2
+                    start_card_middle = current_card.pos().x() + current_card.width() / 2, current_card.pos().y() + current_card.height() / 2
+                    target_card_middle = self.all_cards[i].x() + self.all_cards[i].width() / 2, self.all_cards[i].y() + self.all_cards[i].height() / 2
                     new_line = start_card_middle, target_card_middle
                     print(str(new_line))
                     self.all_lines.append(new_line)
