@@ -294,9 +294,11 @@ class IPlanPy(QtWidgets.QWidget):
         delete_button_pos_y2 = delete_button_pos_y1 + self.delete_card.height()
         if delete_button_pos_x2 >= posX >= delete_button_pos_x1 and delete_button_pos_y1 <= posY <= delete_button_pos_y2:
             card = self.get_card_under_mouse()
-            if not 'NoneType':
+            try:
                 card.delete()
                 self.all_cards.remove(card)
+            except:
+                print('That did not work!')
 
     def handle_shake_gesture(self):
         print("shake detected")
