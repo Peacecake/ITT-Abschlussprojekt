@@ -276,7 +276,7 @@ class IPlanPy(QtWidgets.QWidget):
             if moved.manhattanLength() > 3:
                 event.ignore()
                 return
-    
+
     def check_release_pos(self, posX, posY):
         self.register_if_deleted(posX, posY)
         self.register_if_drawline(posX, posY)
@@ -323,6 +323,8 @@ class IPlanPy(QtWidgets.QWidget):
                     new_line = start_card_middle, target_card_middle
                     print(str(new_line))
                     self.all_lines.append(new_line)
+                    current_card.setStyleSheet('background-color: rgb(85, 170, 255); border: 1px solid black')
+                    self.all_cards[i].setStyleSheet('background-color: rgb(85, 170, 255); border: 1px solid black')
                     self.update()
 
     def paintEvent(self, event):
