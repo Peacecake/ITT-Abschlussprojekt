@@ -203,30 +203,17 @@ class IPlanPy(QtWidgets.QWidget):
             button, is_pressed = event[0]
             if is_pressed:
                 if button == "A":
-                    self.on_wiimote_button_press()
-                print("Button " + button + " is pressed")
-                if button == 'A' and self.ui.lbl_new_card.underMouse():
-                    print('New Card with Wii')
-                    # Doesnt work because: QObject::setParent: Cannot set parent, new parent is in a different thread
-
-                    # card = Card(self)
-                    # new_y = self.ui.fr_control_container.size().height()
-                    # card.setGeometry(0, new_y, card.size().width(), card.size().height())
-                    # self.all_cards.append(card)
-                if button == 'B' and (self.get_card_under_mouse() is not None):
+                    mouse_press_event = QtGui.QMouseEvent(
+                        QtCore.QEvent.MouseButtonPress,
+                        self.mapFromGlobal(QtCore.QPoint(QtGui.QCursor.pos().x(), QtGui.QCursor.pos().y())),
+                        QtCore.Qt.LeftButton,
+                        QtCore.Qt.LeftButton,
+                        QtCore.Qt.NoModifier)
+                    QtCore.QCoreApplication.postEvent(self, mouse_press_event)
+                if button == 'Up' and (self.get_card_under_mouse() is not None):
                     self.get_card_under_mouse().next_color()
-                    # print('Color changed with Wii')
-                    # print(str(self.get_card_under_mouse()))
-                    # self.changeColor(self.get_card_under_mouse())
             else:
                 print("Button " + button + " is released")
-
-    def on_wiimote_button_press(self):
-        card = Card(self.main_windows)
-        new_y = self.ui.fr_control_container.size().height()
-        card.move_to(QtGui.QCursor.pos().x(), new_y)
-        self.all_cards.append(card)
-        print(self)
 
     def on_wiimote_ir(self, event):
         if len(event) is 4:
@@ -239,36 +226,11 @@ class IPlanPy(QtWidgets.QWidget):
     def on_wiimote_accelerometer(self, event):
         self.classifier.add_accelerometer_data(event[0], event[1], event[2])
 
-    def changeColor(self, curr_card):
-        style = str(curr_card.styleSheet())
-        print(style)
-        if 'rgb(85, 170, 255)' in style:
-            curr_card.setStyleSheet(self.bg_colors[1])
-        elif 'red' in style:
-            curr_card.setStyleSheet(self.bg_colors[2])
-        else:
-            curr_card.setStyleSheet(self.bg_colors[0])
-
     def mousePressEvent(self, event):
-        if event.button() == QtCore.Qt.RightButton:
-            '''
-            curr_card = self.get_card_under_mouse()
-            style = str(curr_card.styleSheet())
-            print(style)
-            if 'rgb(85, 170, 255)' in style:
-                curr_card.setStyleSheet(self.bg_colors[1])
-            elif 'red' in style:
-                curr_card.setStyleSheet(self.bg_colors[2])
-            else:
-                curr_card.setStyleSheet(self.bg_colors[0])
-        '''
-            self.get_card_under_mouse().next_color()
-            # self.changeColor(self.get_card_under_mouse())
-
         self.__mousePressPos = None
         self.__mouseMovePos = None
 
-        if event == "A" or event.button() == QtCore.Qt.LeftButton:
+        if event.button() == QtCore.Qt.LeftButton:
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
             if self.ui.lbl_new_card.underMouse():
@@ -277,7 +239,7 @@ class IPlanPy(QtWidgets.QWidget):
         # print("mousePressEvent" + str(self.__mousePressPos) + ' ' + str(self.__mouseMovePos))
 
     def mouseMoveEvent(self, event):
-        if event.buttons() & QtCore.Qt.LeftButton:
+        if self.wiimote is not None and self.wiimote.buttons["B"]:  # event.buttons() & QtCore.Qt.LeftButton:
             card_under_mouse = self.get_card_under_mouse()
             if card_under_mouse is not None:
                 self.handle_card_movement(event, card_under_mouse)
