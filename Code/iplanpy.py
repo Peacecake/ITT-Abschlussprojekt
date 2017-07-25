@@ -331,9 +331,9 @@ class IPlanPy(QtWidgets.QWidget):
 
     def mouseMoveEvent(self, event):
         if self.wiimote is not None and self.wiimote.buttons["B"]:  # event.buttons() & QtCore.Qt.LeftButton:
-            card_under_mouse = self.get_card_under_mouse()
-            if card_under_mouse is not None:
-                self.handle_card_movement(event, card_under_mouse)
+            focused_card = self.get_focused_card()
+            if focused_card is not None:
+                self.handle_card_movement(event, focused_card)
 
         if event.buttons() == QtCore.Qt.LeftButton:
             currPos = self.mapToGlobal(self.pos())
@@ -348,6 +348,12 @@ class IPlanPy(QtWidgets.QWidget):
     def get_card_under_mouse(self):
         for c in self.all_cards:
             if c.underMouse() is True:
+                return c
+        return None
+
+    def get_focused_card(self):
+        for c in self.all_cards:
+            if c.is_focused is True:
                 return c
         return None
 
