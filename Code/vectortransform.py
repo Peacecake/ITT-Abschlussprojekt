@@ -42,6 +42,8 @@ class VectorTransform:
         x = x / z
         y = y / z
 
+        return x, y
+
         self.buffer.append((x, y))
         self.buffer = self.buffer[-3:]
         x_sum = 0

@@ -6,9 +6,10 @@ from PyQt5.QtWidgets import QFrame, QLineEdit, QTextEdit
 
 
 class Card(QFrame):
-    def __init__(self, parent, has_text_field=True):
+    def __init__(self, parent, id, has_text_field=True):
         super(Card, self).__init__()
         self.setParent(parent)
+        self.id = id
         self.DEFAULT_COLOR = "rgb(85, 170, 255)"
         self.DEFAULT_BORDER = "none"
         self.available_colors = [self.DEFAULT_COLOR, 'red', 'green', "yellow"]
@@ -17,6 +18,10 @@ class Card(QFrame):
         self.border = self.DEFAULT_BORDER
         self.unfocued_border = "none"
         self.has_text_field = has_text_field
+        self.is_focused = False
+        self.setup_ui()
+
+    def setup_ui(self):
         self.title_field = QLineEdit()
         self.content_field = QTextEdit()
         self.setup_default_card()
@@ -94,18 +99,18 @@ class Card(QFrame):
 
     def delete(self):
         self.setParent(None)
-        # Todo: remove connections
 
     def focus(self):
-        print("focus")
         self.unfocued_border = self.border
         self.set_border("2px solid orange")
         self.title_field.setFocus()
         self.raise_()
+        self.is_focused = True
+        print("focus " + str(self.is_focused))
 
     def unfocus(self):
-        print("unfocus")
         self.set_border(self.unfocued_border)
+        self.is_focused = False
 
     def center(self):
         x = self.pos().x() + (self.size().width() / 2)

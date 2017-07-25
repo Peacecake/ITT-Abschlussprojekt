@@ -11,6 +11,7 @@ from PyQt5.QtGui import QPainter, QColor, QPen
 import wiimote
 from vectortransform import VectorTransform
 from gestureclassifier import GestureClassifier
+from connectionmanager import ConnectionManager
 from card import Card
 
 
@@ -18,12 +19,14 @@ class IPlanPy(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.CONNECTIONS_FILE = "wii.motes"
-        self.main_windows = self
+        self.card_id = 0
         self.wiimote = None
+        self.ir_callback_count = 0
         self.old_x_coord = 0
         self.old_y_coord = 0
         self.my_vector_transform = VectorTransform()
         self.classifier = GestureClassifier()
+        self.connections = ConnectionManager()
         self.classifier.register_callback(self.handle_shake_gesture)
         self.setMouseTracking(True)
         self.all_cards = []
@@ -62,7 +65,6 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui.btn_toggle_save_and_load_frame.clicked.connect(self.toggle_save_and_load_frame)
         self.ui.btn_load_chart.clicked.connect(self.load_chart)
         self.ui.btn_save.clicked.connect(self.on_btn_save_chart)
-
         self.show()
 
     def toggle_connection_frame(self, event):
@@ -86,21 +88,44 @@ class IPlanPy(QtWidgets.QWidget):
     def load_chart(self, event):
         file_name = self.ui.list_chart_selection.currentItem()
         if file_name is not None:
-            card_infos = self.get_card_info_from_file(file_name.text())
+            card_infos, conn_info = self.get_card_info_from_file(file_name.text())
             if card_infos is not None:
+                self.card_id = 0
                 self.remove_all_cards()
+                self.connections.connections.clear()
+                self.update()
                 self.create_card_from_file(card_infos)
+                self.create_conn_from_file(conn_info)
                 self.toggle_save_and_load_frame(None)
 
     def create_card_from_file(self, card_infos):
+        ids = []
         for info in card_infos:
             info = info.split(";")
-            card = Card(self, self.string_to_bool(info[4]))
-            card.title_field.setText(info[0])
-            card.content_field.setText(ast.literal_eval(info[1]))
-            card.move_to(int(info[2]), int(info[3]))
-            card.set_background_color(info[5])
+            ids.append(int(info[0]))
+            card = Card(self, int(info[0]), self.string_to_bool(info[5]))
+            card.title_field.setText(info[1])
+            card.content_field.setText(ast.literal_eval(info[2]))
+            card.move_to(int(info[3]), int(info[4]))
+            card.set_background_color(info[6])
             self.all_cards.append(card)
+        self.card_id = max(ids) + 1
+
+    def create_conn_from_file(self, conn_info):
+        for info in conn_info:
+            info = info.split(";")
+            id1 = info[0]
+            id2 = info[1]
+            card1 = None
+            card2 = None
+            for card in self.all_cards:
+                if str(card.id) == id1:
+                    card1 = card
+                if str(card.id) == id2:
+                    card2 = card
+            self.connections.connect((card1, card2))
+        self.update()
+
 
     def string_to_bool(self, str):
         if str == "True":
@@ -110,8 +135,19 @@ class IPlanPy(QtWidgets.QWidget):
 
     def get_card_info_from_file(self, file_name):
         try:
+            conn_found = False
+            card_info = []
+            conn_info = []
             with open(file_name) as file:
-                return file.readlines()
+                for line in file:
+                    if line == "-\n":
+                        conn_found = True
+                        continue
+                    if conn_found is False:
+                        card_info.append(line)
+                    else:
+                        conn_info.append(line)
+                return card_info, conn_info
         except Exception as e:
             QMessageBox.warning(self, "Warning", "Could not load chart!\nAdditional information:\n" + e)
             return None
@@ -145,13 +181,18 @@ class IPlanPy(QtWidgets.QWidget):
 
     def write_card_data(self, file):
         for card in self.all_cards:
+            cid = card.id
             title = card.title_field.text()
             content = repr(card.content_field.toPlainText())
             x_pos = card.pos().x()
             y_pos = card.pos().y()
             card_type = str(card.has_text_field)
             color = card.color
-            file.write(title + ";" + content + ";" + str(x_pos) + ";" + str(y_pos) + ";" + card_type + ";" + color + ";\n")
+            file.write(str(cid) + ";" + title + ";" + content + ";" + str(x_pos) + ";" + str(y_pos) + ";" + card_type + ";" + color + ";\n")
+        file.write("-\n")
+        for conn in self.connections.connections:
+            c1, c2 = conn
+            file.write(str(c1.id) + ";" + str(c2.id) + ";\n")
 
     def load_available_charts(self):
         self.ui.list_chart_selection.clear()
@@ -226,6 +267,9 @@ class IPlanPy(QtWidgets.QWidget):
                     card.previous_color()
                 if (button == "Left" or button == "Right") and (card is not None):
                     card.toggle_type()
+                if button == "Minus":
+                    self.connections.remove_last_connection()
+                    self.update()
             else:
                 if button == "B":
                     mouse_release_event = QtGui.QMouseEvent(
@@ -239,20 +283,21 @@ class IPlanPy(QtWidgets.QWidget):
                 print("Button " + button + " is released")
 
     def on_wiimote_ir(self, event):
-        print(event)
-        if len(event) > 4:
-            signals = []
-            for signal in event:
-                if signal["size"] is 1 or signal["size"] is 2:
-                    signals.append(signal)
-        else:
+        if self.ir_callback_count % 3 == 0:
+            #if len(event) > 4:
+             #   signals = []
+              #  for signal in event:
+               #     if signal["size"] is 1 or signal["size"] is 2:
+                #        signals.append(signal)
+            #else:
             signals = event
-        if len(signals) is 4:
-            vectors = []
-            for e in signals:
-                vectors.append((e["x"], e["y"]))
-            x, y = self.my_vector_transform.transform(vectors, self.size().width(), self.size().height())
-            QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
+            if len(signals) is 4:
+                vectors = []
+                for e in signals:
+                    vectors.append((e["x"], e["y"]))
+                x, y = self.my_vector_transform.transform(vectors, self.size().width(), self.size().height())
+                QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
+        self.ir_callback_count = self.ir_callback_count + 1
 
     def on_wiimote_accelerometer(self, event):
         self.classifier.add_accelerometer_data(event[0], event[1], event[2])
@@ -261,7 +306,7 @@ class IPlanPy(QtWidgets.QWidget):
         actual_card = self.get_card_under_mouse()
         if actual_card is not None:
             self.clicked_card_pos = actual_card.pos().x(), actual_card.pos().y()
-            self.clicked_card_center = self.calculate_center(actual_card)
+            self.clicked_card_center = actual_card.center()
         self.__mousePressPos = None
         self.__mouseMovePos = None
 
@@ -303,7 +348,7 @@ class IPlanPy(QtWidgets.QWidget):
         return None
 
     def handle_card_movement(self, mouse_event, card):
-        self.update_lines(self.calculate_center(card))
+        self.update()
         new_x = card.pos().x() + mouse_event.pos().x() - self.old_x_coord
         new_y = card.pos().y() + mouse_event.pos().y() - self.old_y_coord
         if not card.collides_with(self.ui.fr_control_container, new_x, new_y) and not card.hits_window_frame(self, new_x, new_y):
@@ -311,21 +356,6 @@ class IPlanPy(QtWidgets.QWidget):
         else:
             # Doesnt work yet
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.old_x_coord, self.old_y_coord)))
-
-    def update_lines(self, card_center):
-        if len(self.all_lines) != 0:
-            for i in range(len(self.all_lines)):
-                start, target = self.all_lines[i]
-                new_start, new_target = self.all_lines[i]
-                if str(self.clicked_card_center) == str(start):
-                    new_start = card_center
-                    self.clicked_card_center = card_center
-                if str(self.clicked_card_center) == str(target):
-                    new_target = card_center
-                    self.clicked_card_center = card_center
-                self.all_lines[i] = new_start, new_target
-        print(str(self.all_lines))
-        self.update()
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
@@ -340,10 +370,11 @@ class IPlanPy(QtWidgets.QWidget):
         self.register_if_drawline(posX, posY)
 
     def make_new_card(self, event):
-        card = Card(self)
+        card = Card(self, self.card_id)
         new_y = self.ui.fr_control_container.size().height() + 3
         card.move_to(event.pos().x(), new_y)
         self.all_cards.append(card)
+        self.card_id = self.card_id + 1
 
     def register_if_deleted(self, posX, posY):
         delete_button_pos_x1 = self.delete_card.x()
@@ -352,11 +383,11 @@ class IPlanPy(QtWidgets.QWidget):
         delete_button_pos_y2 = delete_button_pos_y1 + self.delete_card.height()
         if delete_button_pos_x2 >= posX >= delete_button_pos_x1 and delete_button_pos_y1 <= posY <= delete_button_pos_y2:
             card = self.get_card_under_mouse()
-            try:
+            if card is not None:
+                self.connections.delete_all_card_connections(card)
                 card.delete()
                 self.all_cards.remove(card)
-            except:
-                print('That did not work!')
+                self.update()
 
     def register_if_drawline(self, posX, posY):
         current_card = self.get_card_under_mouse()
@@ -365,6 +396,7 @@ class IPlanPy(QtWidgets.QWidget):
                 if c is current_card:
                     continue
                 if current_card.collides_with(c, current_card.pos().x(), current_card.pos().y()):
+                    self.connections.connect((current_card, c))
                     x, y = self.clicked_card_pos
                     current_card.move_to(x, y)
                     new_line = current_card.center(), c.center()
@@ -385,16 +417,18 @@ class IPlanPy(QtWidgets.QWidget):
         pen.setWidth(3)
         pen.setColor(QColor(0, 0, 0))
         painter.setPen(pen)
-        for i in range(len(self.all_lines)):
-            start, target = self.all_lines[i]
-            x1, y1 = start
-            x2, y2 = target
-            # print(str(start) + '' + str(target))
+        for conn in self.connections.connections:
+            card1, card2 = conn
+            x1, y1 = card1.center()
+            x2, y2 = card2.center()
             painter.drawLine(x1, y1, x2, y2)
         painter.end()
 
     def handle_shake_gesture(self):
-        print("shake detected")
+        for card in self.all_cards:
+            if card.is_focused is True:
+                self.connections.delete_all_card_connections(card)
+                self.update()
 
 
 if __name__ == '__main__':
