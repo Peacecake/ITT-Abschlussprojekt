@@ -9,6 +9,7 @@ from numpy import *
 class VectorTransform:
     def __init__(self):
         super().__init__()
+        self.buffer = []
 
     def transform(self, vectors, x_size, y_size):
         self.DEST_W = x_size
@@ -38,7 +39,19 @@ class VectorTransform:
             return 0, 0
         source_to_destination = unit_to_destination @ source_to_unit
         x, y, z = [float(w) for w in (source_to_destination @ matrix([[512], [384], [1]]))]
-        return x / z, y / z
+        x = x / z
+        y = y / z
+
+        self.buffer.append((x, y))
+        self.buffer = self.buffer[-3:]
+        x_sum = 0
+        y_sum = 0
+        for p in self.buffer:
+            a, b = p
+            x_sum = x_sum + a
+            y_sum = y_sum + b
+
+        return x_sum / len(self.buffer), y_sum / len(self.buffer)
 
     def get_factor_vector(self, x1, x2, x3, x4, y1, y2, y3, y4):
         source_points_123 = matrix([[x1, x2, x3],

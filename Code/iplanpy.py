@@ -240,10 +240,13 @@ class IPlanPy(QtWidgets.QWidget):
 
     def on_wiimote_ir(self, event):
         print(event)
-        signals = []
-        for signal in event:
-            if signal["size"] is 1 or signal["size"] is 2:
-                signals.append(signal)
+        if len(event) > 4:
+            signals = []
+            for signal in event:
+                if signal["size"] is 1 or signal["size"] is 2:
+                    signals.append(signal)
+        else:
+            signals = event
         if len(signals) is 4:
             vectors = []
             for e in signals:
