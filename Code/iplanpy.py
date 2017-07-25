@@ -65,7 +65,14 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui.btn_toggle_save_and_load_frame.clicked.connect(self.toggle_save_and_load_frame)
         self.ui.btn_load_chart.clicked.connect(self.load_chart)
         self.ui.btn_save.clicked.connect(self.on_btn_save_chart)
+        self.ui.btn_new_chart.clicked.connect(self.on_btn_new_chart)
         self.show()
+
+    def on_btn_new_chart(self, event):
+        self.remove_all_cards()
+        self.connections.connections.clear()
+        self.card_id = 0
+        self.update()
 
     def toggle_connection_frame(self, event):
         value = not self.ui.fr_connection.isVisible()

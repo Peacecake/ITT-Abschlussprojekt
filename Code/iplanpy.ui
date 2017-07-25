@@ -36,6 +36,9 @@
      <height>291</height>
     </rect>
    </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <property name="styleSheet">
     <string notr="true"/>
    </property>
@@ -98,11 +101,17 @@
   <widget class="QFrame" name="fr_save_and_load">
    <property name="geometry">
     <rect>
-     <x>140</x>
+     <x>280</x>
      <y>100</y>
      <width>251</width>
      <height>291</height>
     </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -175,7 +184,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>671</width>
+     <width>861</width>
      <height>101</height>
     </rect>
    </property>
@@ -191,9 +200,9 @@
    <widget class="QLabel" name="lbl_new_card">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>420</x>
       <y>0</y>
-      <width>390</width>
+      <width>441</width>
       <height>101</height>
      </rect>
     </property>
@@ -222,7 +231,7 @@
    <widget class="QPushButton" name="btn_toggle_save_and_load_frame">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>280</x>
       <y>0</y>
       <width>141</width>
       <height>101</height>
@@ -243,6 +252,19 @@
     </property>
     <property name="text">
      <string>Connection Settings</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_new_chart">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>0</y>
+      <width>141</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>New chart</string>
     </property>
    </widget>
   </widget>
