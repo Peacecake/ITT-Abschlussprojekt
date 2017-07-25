@@ -316,14 +316,14 @@ class IPlanPy(QtWidgets.QWidget):
         if len(self.all_lines) != 0:
             for i in range(len(self.all_lines)):
                 start, target = self.all_lines[i]
+                new_start, new_target = self.all_lines[i]
                 if str(self.clicked_card_center) == str(start):
                     new_start = card_center
                     self.clicked_card_center = card_center
-                    self.all_lines[i] = new_start, target
                 if str(self.clicked_card_center) == str(target):
                     new_target = card_center
                     self.clicked_card_center = card_center
-                    self.all_lines[i] = start, new_target
+                self.all_lines[i] = new_start, new_target
         print(str(self.all_lines))
         self.update()
 
