@@ -279,7 +279,7 @@ class IPlanPy(QtWidgets.QWidget):
                 print("Button " + button + " is released")
 
     def on_wiimote_ir(self, event):
-        if self.ir_callback_count % 3 == 0:
+        if self.ir_callback_count % 4 == 0:
             #if len(event) > 4:
              #   signals = []
               #  for signal in event:
