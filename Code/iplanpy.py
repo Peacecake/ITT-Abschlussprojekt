@@ -315,7 +315,7 @@ class IPlanPy(QtWidgets.QWidget):
                 if str(self.clicked_card_center) == str(target):
                     new_target = card_center
                     self.clicked_card_center = card_center
-                    self.all_lines[i] = start, target
+                    self.all_lines[i] = start, new_target
         print(str(self.all_lines))
         self.update()
 
