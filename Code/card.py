@@ -130,6 +130,13 @@ class Card(QFrame):
         else:
             return False
 
+    def collides(self, widget):
+        x = self.pos().x()
+        y = self.pos().y()
+        width = self.size().width()
+        height = self.size().height()
+        return x < widget.pos().x() + widget.size().width() and x + width > widget.pos().x() and y < widget.pos().y() + widget.size().height() and y + height > widget.pos().y();
+
     def hits_window_frame(self, window_frame, new_x, new_y):
         if new_y <= 0 or new_y + self.size().height() >= window_frame.size().height() and new_x >= 0 or new_x + self.size().width() >= window_frame.size().width():
             return True

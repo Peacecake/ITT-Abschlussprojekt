@@ -374,6 +374,14 @@ class IPlanPy(QtWidgets.QWidget):
         self.card_id = self.card_id + 1
 
     def register_if_deleted(self, posX, posY):
+        card = self.get_card_under_mouse()
+        if card is not None:
+            if card.collides(self.ui.delete_card):
+                self.connections.delete_all_card_connections(card)
+                card.delete()
+                self.all_cards.remove(card)
+                self.update()
+                '''
         delete_button_pos_x1 = self.delete_card.x()
         delete_button_pos_x2 = delete_button_pos_x1 + self.delete_card.width()
         delete_button_pos_y1 = self.delete_card.y()
@@ -384,7 +392,7 @@ class IPlanPy(QtWidgets.QWidget):
                 self.connections.delete_all_card_connections(card)
                 card.delete()
                 self.all_cards.remove(card)
-                self.update()
+                self.update()'''
 
     def register_if_drawline(self, posX, posY):
         current_card = self.get_card_under_mouse()
@@ -392,7 +400,7 @@ class IPlanPy(QtWidgets.QWidget):
             for c in self.all_cards:
                 if c is current_card:
                     continue
-                if current_card.collides_with(c, current_card.pos().x(), current_card.pos().y()):
+                if current_card.collides(c):  # , current_card.pos().x(), current_card.pos().y()):
                     self.connections.connect((current_card, c))
                     x, y = self.clicked_card_pos
                     current_card.move_to(x, y)
