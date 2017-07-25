@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1108</width>
-    <height>588</height>
+    <width>1234</width>
+    <height>821</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>IPlanPy</string>
@@ -25,7 +31,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>50</y>
+     <y>100</y>
      <width>231</width>
      <height>291</height>
     </rect>
@@ -93,7 +99,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>50</y>
+     <y>100</y>
      <width>251</width>
      <height>291</height>
     </rect>
@@ -170,7 +176,7 @@
      <x>0</x>
      <y>0</y>
      <width>671</width>
-     <height>51</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -188,7 +194,7 @@
       <x>280</x>
       <y>0</y>
       <width>390</width>
-      <height>50</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -219,7 +225,7 @@
       <x>140</x>
       <y>0</y>
       <width>141</width>
-      <height>51</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="text">
@@ -232,7 +238,7 @@
       <x>0</x>
       <y>0</y>
       <width>141</width>
-      <height>51</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="text">
@@ -243,11 +249,17 @@
   <widget class="QLabel" name="delete_card">
    <property name="geometry">
     <rect>
-     <x>670</x>
-     <y>0</y>
-     <width>390</width>
-     <height>50</height>
+     <x>0</x>
+     <y>100</y>
+     <width>121</width>
+     <height>771</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <property name="autoFillBackground">
     <bool>false</bool>
@@ -256,6 +268,11 @@
     <string notr="true">QLabel:hover#delete_card {
 	background-color: red;
 	color: white
+}
+
+delete_card {
+	height: 100%;
+	float: left;
 }</string>
    </property>
    <property name="frameShape">
@@ -271,10 +288,10 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
+  <zorder>delete_card</zorder>
   <zorder>fr_save_and_load</zorder>
   <zorder>fr_connection</zorder>
   <zorder>fr_control_container</zorder>
-  <zorder>delete_card</zorder>
  </widget>
  <resources/>
  <connections/>

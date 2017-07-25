@@ -24,14 +24,13 @@ class IPlanPy(QtWidgets.QWidget):
         self.ir_callback_count = 0
         self.old_x_coord = 0
         self.old_y_coord = 0
+        self.all_cards = []
+
         self.my_vector_transform = VectorTransform()
         self.classifier = GestureClassifier()
         self.connections = ConnectionManager()
         self.classifier.register_callback(self.handle_shake_gesture)
-        self.setMouseTracking(True)
-        self.all_cards = []
-        self.all_lines = []
-        self.bg_colors = ['background-color: rgb(85, 170, 255)', 'background-color: red', 'background-color: green']
+
         self.init_ui()
         self.load_available_charts()
         self.display_known_wiimotes()
@@ -58,6 +57,7 @@ class IPlanPy(QtWidgets.QWidget):
 
     def init_ui(self):
         self.ui = uic.loadUi("iplanpy.ui", self)
+        self.setMouseTracking(True)
         self.ui.fr_save_and_load.setVisible(False)
         self.ui.btn_connect_wiimote.clicked.connect(self.toggle_wiimote_connection)
         self.ui.btn_scan_wiimotes.clicked.connect(self.scan_for_wiimotes)
@@ -279,7 +279,7 @@ class IPlanPy(QtWidgets.QWidget):
                 print("Button " + button + " is released")
 
     def on_wiimote_ir(self, event):
-        if self.ir_callback_count % 4 == 0:
+        if self.ir_callback_count % 3 == 0:
             #if len(event) > 4:
              #   signals = []
               #  for signal in event:
@@ -287,7 +287,8 @@ class IPlanPy(QtWidgets.QWidget):
                 #        signals.append(signal)
             #else:
             signals = event
-            if len(signals) is 4:
+            if len(signals) >= 4:
+                print(signals)
                 vectors = []
                 for e in signals:
                     vectors.append((e["x"], e["y"]))
@@ -395,9 +396,6 @@ class IPlanPy(QtWidgets.QWidget):
                     self.connections.connect((current_card, c))
                     x, y = self.clicked_card_pos
                     current_card.move_to(x, y)
-                    new_line = current_card.center(), c.center()
-                    print(str(new_line))
-                    self.all_lines.append(new_line)
                     border = "1px solid black"
                     current_card.set_border(border)
                     c.set_border(border)
