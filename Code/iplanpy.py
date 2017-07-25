@@ -126,12 +126,8 @@ class IPlanPy(QtWidgets.QWidget):
             self.connections.connect((card1, card2))
         self.update()
 
-
     def string_to_bool(self, str):
-        if str == "True":
-            return True
-        else:
-            return False
+        return str == "True"
 
     def get_card_info_from_file(self, file_name):
         try:
@@ -406,9 +402,6 @@ class IPlanPy(QtWidgets.QWidget):
                     current_card.set_border(border)
                     c.set_border(border)
                     self.update()
-
-    def calculate_center(self, cur_card):
-        return cur_card.pos().x() + cur_card.width()/2, cur_card.pos().y() + cur_card.height()/2
 
     def paintEvent(self, event):
         painter = QtGui.QPainter()
