@@ -239,6 +239,7 @@ class IPlanPy(QtWidgets.QWidget):
                 print("Button " + button + " is released")
 
     def on_wiimote_ir(self, event):
+        print(event)
         if len(event) is 4:
             vectors = []
             for e in event:
