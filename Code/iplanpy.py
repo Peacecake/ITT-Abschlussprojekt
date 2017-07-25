@@ -95,11 +95,11 @@ class IPlanPy(QtWidgets.QWidget):
     def create_card_from_file(self, card_infos):
         for info in card_infos:
             info = info.split(";")
-            print(self.string_to_bool(info[4]))
             card = Card(self, self.string_to_bool(info[4]))
             card.title_field.setText(info[0])
             card.content_field.setText(ast.literal_eval(info[1]))
             card.move_to(int(info[2]), int(info[3]))
+            card.set_background_color(info[5])
             self.all_cards.append(card)
 
     def string_to_bool(self, str):
@@ -150,7 +150,8 @@ class IPlanPy(QtWidgets.QWidget):
             x_pos = card.pos().x()
             y_pos = card.pos().y()
             card_type = str(card.has_text_field)
-            file.write(title + ";" + content + ";" + str(x_pos) + ";" + str(y_pos) + ";" + card_type + ";\n")
+            color = card.color
+            file.write(title + ";" + content + ";" + str(x_pos) + ";" + str(y_pos) + ";" + card_type + ";" + color + ";\n")
 
     def load_available_charts(self):
         self.ui.list_chart_selection.clear()
