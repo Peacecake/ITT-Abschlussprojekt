@@ -246,7 +246,7 @@ class IPlanPy(QtWidgets.QWidget):
                 signals.append(signal)
         if len(signals) is 4:
             vectors = []
-            for e in event:
+            for e in signals:
                 vectors.append((e["x"], e["y"]))
             x, y = self.my_vector_transform.transform(vectors, self.size().width(), self.size().height())
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
