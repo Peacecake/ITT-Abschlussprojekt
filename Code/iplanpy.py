@@ -298,6 +298,21 @@ class IPlanPy(QtWidgets.QWidget):
             # Doesnt work yet
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.old_x_coord, self.old_y_coord)))
 
+    def update_lines(self, card_center):
+        if len(self.all_lines) != 0:
+            for i in range(len(self.all_lines)):
+                start, target = self.all_lines[i]
+                if str(self.clicked_card_center) == str(start):
+                    new_start = card_center
+                    self.clicked_card_center = card_center
+                    self.all_lines[i] = new_start, target
+                if str(self.clicked_card_center) == str(target):
+                    new_target = card_center
+                    self.clicked_card_center = card_center
+                    self.all_lines[i] = start, target
+        print(str(self.all_lines))
+        self.update()
+
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
             moved = event.globalPos() - self.__mousePressPos
@@ -330,9 +345,8 @@ class IPlanPy(QtWidgets.QWidget):
                 print('That did not work!')
 
     def register_if_drawline(self, posX, posY):
-        print('register drawline')
         current_card = self.get_card_under_mouse()
-        if current_card is not None:
+        if current_card is not None and len(self.all_cards) > 1:
             for c in self.all_cards:
                 if c is current_card:
                     continue
@@ -356,7 +370,7 @@ class IPlanPy(QtWidgets.QWidget):
             start, target = self.all_lines[i]
             x1, y1 = start
             x2, y2 = target
-            print(str(start) + '' + str(target))
+            # print(str(start) + '' + str(target))
             painter.drawLine(x1, y1, x2, y2)
         painter.end()
 
