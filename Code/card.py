@@ -130,6 +130,8 @@ class Card(QFrame):
         else:
             return False
 
+    # Source:
+    # https://stackoverflow.com/questions/23302698/java-check-if-two-rectangles-overlap-at-any-point
     def collides(self, widget):
         x = self.pos().x()
         y = self.pos().y()
