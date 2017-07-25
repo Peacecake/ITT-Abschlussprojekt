@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QFrame, QLineEdit, QTextEdit
 
 
 class Card(QFrame):
-    def __init__(self, parent):
+    def __init__(self, parent, has_text_field=True):
         super(Card, self).__init__()
         self.setParent(parent)
         self.DEFAULT_COLOR = "rgb(85, 170, 255)"
@@ -16,18 +16,51 @@ class Card(QFrame):
         self.color = self.available_colors[self.color_index]
         self.border = self.DEFAULT_BORDER
         self.unfocued_border = "none"
+        self.has_text_field = has_text_field
         self.title_field = QLineEdit()
         self.content_field = QTextEdit()
+        self.setup_default_card()
+        if self.has_text_field is False:
+            self.setup_title_only_card()
+        self.update_stylesheet()
+        self.setMouseTracking(True)
+
+    def toggle_type(self):
+        self.has_text_field = not self.has_text_field
+        if self.has_text_field is not True:
+            self.setup_title_only_card()
+        else:
+            self.setup_default_card()
+
+    def setup_title_only_card(self):
+        self.content_field.setParent(None)
+        self.resize(281, 80)
+        self.title_field.resize(230, 60)
+        self.title_field.move(25, 10)
+        self.set_title_font(25)
+
+    def setup_default_card(self):
         self.setup_frame()
         self.setup_title()
         self.setup_content()
-        self.update_stylesheet()
-        self.setMouseTracking(True)
+        self.set_title_font(12)
+
+    def set_title_font(self, font_size):
+        self.title_field.selectAll()
+        font = self.title_field.font()
+        font.setPointSize(font_size)
+        self.title_field.setFont(font)
 
     def next_color(self):
         self.color_index = self.color_index + 1
         if len(self.available_colors) is self.color_index:
             self.color_index = 0
+        self.set_background_color(self.available_colors[self.color_index])
+
+    def previous_color(self):
+        self.color_index = self.color_index - 1
+        if self.color_index is -1:
+            self.color_index = len(self.available_colors) - 1
         self.set_background_color(self.available_colors[self.color_index])
 
     def set_background_color(self, color):

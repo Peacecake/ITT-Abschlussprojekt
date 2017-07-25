@@ -95,11 +95,18 @@ class IPlanPy(QtWidgets.QWidget):
     def create_card_from_file(self, card_infos):
         for info in card_infos:
             info = info.split(";")
-            card = Card(self)
+            print(self.string_to_bool(info[4]))
+            card = Card(self, self.string_to_bool(info[4]))
             card.title_field.setText(info[0])
             card.content_field.setText(ast.literal_eval(info[1]))
-            card.setGeometry(int(info[2]), int(info[3]), card.size().width(), card.size().height())
+            card.move_to(int(info[2]), int(info[3]))
             self.all_cards.append(card)
+
+    def string_to_bool(self, str):
+        if str == "True":
+            return True
+        else:
+            return False
 
     def get_card_info_from_file(self, file_name):
         try:
@@ -142,7 +149,8 @@ class IPlanPy(QtWidgets.QWidget):
             content = repr(card.content_field.toPlainText())
             x_pos = card.pos().x()
             y_pos = card.pos().y()
-            file.write(title + ";" + content + ";" + str(x_pos) + ";" + str(y_pos) + ";\n")
+            card_type = str(card.has_text_field)
+            file.write(title + ";" + content + ";" + str(x_pos) + ";" + str(y_pos) + ";" + card_type + ";\n")
 
     def load_available_charts(self):
         self.ui.list_chart_selection.clear()
@@ -202,6 +210,7 @@ class IPlanPy(QtWidgets.QWidget):
         if len(event) is not 0:
             button, is_pressed = event[0]
             if is_pressed:
+                card = self.get_card_under_mouse()
                 if button == "B":
                     mouse_press_event = QtGui.QMouseEvent(
                         QtCore.QEvent.MouseButtonPress,
@@ -210,8 +219,12 @@ class IPlanPy(QtWidgets.QWidget):
                         QtCore.Qt.LeftButton,
                         QtCore.Qt.NoModifier)
                     QtCore.QCoreApplication.postEvent(self, mouse_press_event)
-                if button == 'Up' and (self.get_card_under_mouse() is not None):
-                    self.get_card_under_mouse().next_color()
+                if button == 'Up' and (card is not None):
+                    card.next_color()
+                if button == "Down" and (card is not None):
+                    card.previous_color()
+                if (button == "Left" or button == "Right") and (card is not None):
+                    card.toggle_type()
             else:
                 if button == "B":
                     mouse_release_event = QtGui.QMouseEvent(
