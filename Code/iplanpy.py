@@ -296,6 +296,7 @@ class IPlanPy(QtWidgets.QWidget):
         return None
 
     def handle_card_movement(self, mouse_event, card):
+        self.update_lines(self.calculate_center(card))
         new_x = card.pos().x() + mouse_event.pos().x() - self.old_x_coord
         new_y = card.pos().y() + mouse_event.pos().y() - self.old_y_coord
         if not card.collides_with(self.ui.fr_control_container, new_x, new_y) and not card.hits_window_frame(self, new_x, new_y):
