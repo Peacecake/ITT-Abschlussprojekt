@@ -250,6 +250,10 @@ class IPlanPy(QtWidgets.QWidget):
         self.classifier.add_accelerometer_data(event[0], event[1], event[2])
 
     def mousePressEvent(self, event):
+        actual_card = self.get_card_under_mouse()
+        if actual_card is not None:
+            self.clicked_card_pos = actual_card.pos().x(), actual_card.pos().y()
+            self.clicked_card_center = self.calculate_center(actual_card)
         self.__mousePressPos = None
         self.__mouseMovePos = None
 
@@ -353,6 +357,8 @@ class IPlanPy(QtWidgets.QWidget):
                 if c is current_card:
                     continue
                 if current_card.collides_with(c, current_card.pos().x(), current_card.pos().y()):
+                    x, y = self.clicked_card_pos
+                    current_card.move_to(x, y)
                     new_line = current_card.center(), c.center()
                     print(str(new_line))
                     self.all_lines.append(new_line)
@@ -360,6 +366,9 @@ class IPlanPy(QtWidgets.QWidget):
                     current_card.set_border(border)
                     c.set_border(border)
                     self.update()
+
+    def calculate_center(self, cur_card):
+        return cur_card.pos().x() + cur_card.width()/2, cur_card.pos().y() + cur_card.height()/2
 
     def paintEvent(self, event):
         painter = QtGui.QPainter()
