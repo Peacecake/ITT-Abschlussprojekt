@@ -191,7 +191,8 @@ class IPlanPy(QtWidgets.QWidget):
             y_pos = card.pos().y()
             card_type = str(card.has_text_field)
             color = card.color
-            file.write(str(cid) + ";" + title + ";" + content + ";" + str(x_pos) + ";" + str(y_pos) + ";" + card_type + ";" + color + ";\n")
+            file.write(str(cid) + ";" + title + ";" + content + ";" + str(x_pos) +
+                       ";" + str(y_pos) + ";" + card_type + ";" + color + ";\n")
         file.write("-\n")
         for conn in self.connections.connections:
             c1, c2 = conn
@@ -287,12 +288,12 @@ class IPlanPy(QtWidgets.QWidget):
 
     def on_wiimote_ir(self, event):
         if self.ir_callback_count % 3 == 0:
-            #if len(event) > 4:
+            # if len(event) > 4:
              #   signals = []
               #  for signal in event:
                #     if signal["size"] is 1 or signal["size"] is 2:
                 #        signals.append(signal)
-            #else:
+            # else:
             signals = event
             if len(signals) >= 4:
                 print(signals)

@@ -1,16 +1,9 @@
 0;IPlanPy;'';923;43;False;green;
-1;wiimote.py;'- ir sensor\n- buttons\n- accelerometer';193;285;True;rgb(85, 170, 255);
+1;wiimote;'- ir sensor\n- buttons\n- accelerometer';193;285;True;rgb(85, 170, 255);
 2;vectortransform;'Umwandeln der ir Werte in Mauskoordinaten';305;588;True;rgb(85, 170, 255);
-3;gestureclassifier;'';838;554;True;rgb(85, 170, 255);
-4;card;'';1395;122;True;rgb(85, 170, 255);
-5;connectionmanager;'speichern aller Verbindung';1421;464;True;rgb(85, 170, 255);
-6;SVM;'';834;775;False;rgb(85, 170, 255);
-7;steady;'';656;888;False;rgb(85, 170, 255);
-8;shake;'';1101;890;False;rgb(85, 170, 255);
+3;gestureclassifier;'- nutzt machine learning system scikit-learn\n- csv mit Trainingsdaten werden bei Programmstart eingelesen\n- Rohdaten von Beschleunigungssensor der Wiimote';838;554;True;rgb(85, 170, 255);
+5;connectionmanager;'- Verwalten aller Verbindung\n- Liste aus Tupeln von Karten';1421;464;True;rgb(85, 170, 255);
 -
 1;0;
 2;0;
 3;0;
-6;3;
-7;6;
-8;6;

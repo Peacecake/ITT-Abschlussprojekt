@@ -77,7 +77,8 @@ class Card(QFrame):
         self.update_stylesheet()
 
     def update_stylesheet(self):
-        self.setStyleSheet("background-color: " + self.color + "; border: " + self.border + ";")
+        self.setStyleSheet("background-color: " + self.color +
+                           "; border: " + self.border + ";")
 
     def setup_frame(self):
         self.resize(281, 181)
@@ -137,7 +138,7 @@ class Card(QFrame):
         y = self.pos().y()
         width = self.size().width()
         height = self.size().height()
-        return x < widget.pos().x() + widget.size().width() and x + width > widget.pos().x() and y < widget.pos().y() + widget.size().height() and y + height > widget.pos().y();
+        return x < widget.pos().x() + widget.size().width() and x + width > widget.pos().x() and y < widget.pos().y() + widget.size().height() and y + height > widget.pos().y()
 
     def hits_window_frame(self, window_frame, new_x, new_y):
         if new_y <= 0 or new_y + self.size().height() >= window_frame.size().height() and new_x >= 0 or new_x + self.size().width() >= window_frame.size().width():
