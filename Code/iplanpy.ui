@@ -21,7 +21,6 @@
   </property>
   <property name="styleSheet">
    <string notr="true">#Form {
-	scrollbar: visible;
 	background-color: #F8ECC2
 }</string>
   </property>
@@ -41,7 +40,10 @@
     <bool>false</bool>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: #4eb6fc;</string>
+    <string notr="true">QFrame#fr_connection {
+background-color: #4eb6fc;
+border: 1px solid black;
+}</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -59,11 +61,17 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #3498db;
+     <string notr="true">QPushButton {
+background-color: #3498db;
 border: 1px solid black;
 border-radius: 10px;
+color: white;
+font-size: 14px;
+}
 
-</string>
+QPushButton:hover {
+	background-color: #2980b9;
+}</string>
     </property>
     <property name="text">
      <string>Connect</string>
@@ -105,11 +113,17 @@ border-radius: 10px;
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #3498db;
+     <string notr="true">QPushButton {
+background-color: #3498db;
 border: 1px solid black;
 border-radius: 10px;
+color: white;
+font-size: 14px;
+}
 
-</string>
+QPushButton:hover {
+	background-color: #2980b9;
+}</string>
     </property>
     <property name="text">
      <string>Scan</string>
@@ -129,7 +143,10 @@ border-radius: 10px;
     <bool>false</bool>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: #4eb6fc;</string>
+    <string notr="true">QFrame#fr_save_and_load {
+	background-color: #4eb6fc;
+	border: 1px solid black;
+}</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -173,11 +190,17 @@ border-radius: 10px;
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #3498db;
+     <string notr="true">QPushButton {
+background-color: #3498db;
 border: 1px solid black;
 border-radius: 10px;
+color: white;
+font-size: 14px;
+}
 
-</string>
+QPushButton:hover {
+	background-color: #2980b9;
+}</string>
     </property>
     <property name="text">
      <string>Load</string>
@@ -193,7 +216,14 @@ border-radius: 10px;
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: white;</string>
+     <string notr="true">QLineEdit {
+	background-color: white;
+	border-radius: 5px;
+}
+
+QLineEdit:focus {
+	border: 1px solid black;
+}</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_save">
@@ -206,11 +236,17 @@ border-radius: 10px;
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #3498db;
+     <string notr="true">QPushButton {
+background-color: #3498db;
 border: 1px solid black;
 border-radius: 10px;
+color: white;
+font-size: 14px;
+}
 
-</string>
+QPushButton:hover {
+	background-color: #2980b9;
+}</string>
     </property>
     <property name="text">
      <string>Save</string>
@@ -250,11 +286,12 @@ border-radius: 10px;
     <property name="styleSheet">
      <string notr="true">QLabel:hover#lbl_new_card {
 	background-color: green;
-	color: white
+	color: white;
 }
 
 #lbl_new_card {
-	background-color: #2ecc71
+	background-color: #2ecc71;
+	font-size: 20px;
 }</string>
     </property>
     <property name="frameShape">
@@ -280,8 +317,16 @@ border-radius: 10px;
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #3498db;
-border: 1px solid black;</string>
+     <string notr="true">QPushButton {
+background-color: #3498db;
+border: 1px solid black;
+color: white;
+font-size: 14px;
+}
+
+QPushButton:hover {
+	background-color: #2980b9;
+}</string>
     </property>
     <property name="text">
      <string>Save / Load</string>
@@ -297,10 +342,16 @@ border: 1px solid black;</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #3498db;
+     <string notr="true">QPushButton {
+background-color: #3498db;
 border: 1px solid black;
+color: white;
+font-size: 14px;
+}
 
-</string>
+QPushButton:hover {
+	background-color: #2980b9;
+}</string>
     </property>
     <property name="text">
      <string>Connection Settings</string>
@@ -316,8 +367,16 @@ border: 1px solid black;
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: #3498db;
-border: 1px solid black;</string>
+     <string notr="true">QPushButton {
+background-color: #3498db;
+border: 1px solid black;
+color: white;
+font-size: 14px;
+}
+
+QPushButton:hover {
+	background-color: #2980b9;
+}</string>
     </property>
     <property name="text">
      <string>New chart</string>
@@ -352,6 +411,7 @@ border: 1px solid black;</string>
 	height: 100%;
 	float: left;
 	background-color: #e74c3c;
+	font-size:17px;
 }</string>
    </property>
    <property name="frameShape">
