@@ -63,7 +63,7 @@ border: 1px solid black;
     <property name="styleSheet">
      <string notr="true">QPushButton {
 background-color: #3498db;
-border: 1px solid black;
+border: 2px solid #ecf0f1;
 border-radius: 10px;
 color: white;
 font-size: 14px;
@@ -115,7 +115,7 @@ QPushButton:hover {
     <property name="styleSheet">
      <string notr="true">QPushButton {
 background-color: #3498db;
-border: 1px solid black;
+border: 2px solid #ecf0f1;
 border-radius: 10px;
 color: white;
 font-size: 14px;
@@ -192,7 +192,7 @@ QPushButton:hover {
     <property name="styleSheet">
      <string notr="true">QPushButton {
 background-color: #3498db;
-border: 1px solid black;
+border: 2px solid #ecf0f1;
 border-radius: 10px;
 color: white;
 font-size: 14px;
@@ -238,7 +238,7 @@ QLineEdit:focus {
     <property name="styleSheet">
      <string notr="true">QPushButton {
 background-color: #3498db;
-border: 1px solid black;
+border: 2px solid #ecf0f1;
 border-radius: 10px;
 color: white;
 font-size: 14px;
@@ -343,10 +343,10 @@ QPushButton:hover {
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
-background-color: #3498db;
-border: 1px solid black;
-color: white;
-font-size: 14px;
+	background-color: #3498db;
+	border: 1px solid black;
+	color: white;
+	font-size: 14px;
 }
 
 QPushButton:hover {
