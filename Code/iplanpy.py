@@ -307,7 +307,30 @@ class IPlanPy(QtWidgets.QWidget):
     def on_wiimote_accelerometer(self, event):
         self.classifier.add_accelerometer_data(event[0], event[1], event[2])
 
+    def keyPressEvent(self, event):
+        alt_modifier = (event.modifiers() & QtCore.Qt.AltModifier) != 0
+        card = self.get_card_under_mouse()
+        if card is not None:
+            if (alt_modifier and event.key() == QtCore.Qt.Key_Up):
+                card.next_color()
+            if (alt_modifier and event.key() == QtCore.Qt.Key_Down):
+                card.previous_color()
+            if alt_modifier and (event.key() == QtCore.Qt.Key_Right):
+                card.toggle_type()
+            if alt_modifier and (event.key() == QtCore.Qt.Key_Left):
+                card.toggle_type()
+        if alt_modifier and (event.key() == QtCore.Qt.Key_Backspace):
+            self.connections.remove_last_connection()
+            self.update()
+
     def mousePressEvent(self, event):
+        if self.ui.btn_toggle_connection_frame.underMouse() is True:
+            self.toggle_connection_frame(event)
+        elif self.ui.btn_toggle_save_and_load_frame.underMouse() is True:
+            self.toggle_save_and_load_frame(event)
+        elif self.ui.btn_new_chart.underMouse() is True:
+            self.on_btn_new_chart(event)
+
         actual_card = self.get_card_under_mouse()
         if actual_card is not None:
             self.clicked_card_pos = actual_card.pos().x(), actual_card.pos().y()
