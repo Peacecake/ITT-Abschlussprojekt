@@ -99,6 +99,8 @@ class Card(QFrame):
         self.content_field.setStyleSheet('background-color: white; font-size: 12px;')
         self.content_field.setVisible(True)
 
+    # Source:
+    # https://stackoverflow.com/questions/5899826/pyqt-how-to-remove-a-widget
     def delete(self):
         self.setParent(None)
 

@@ -344,18 +344,21 @@ class IPlanPy(QtWidgets.QWidget):
         self.old_y_coord = event.pos().y()
         self.old_x_coord = event.pos().x()
 
+    # Returns the card under the mouse if there is one.
     def get_card_under_mouse(self):
         for c in self.all_cards:
             if c.underMouse() is True:
                 return c
         return None
 
+    # Returns the focused card if there is one focused.
     def get_focused_card(self):
         for c in self.all_cards:
             if c.is_focused is True:
                 return c
         return None
 
+    # Handles the card movement and collisions with the main window frame.
     def handle_card_movement(self, mouse_event, card):
         self.update()
         new_x = card.pos().x() + mouse_event.pos().x() - self.old_x_coord
@@ -363,7 +366,7 @@ class IPlanPy(QtWidgets.QWidget):
         if not card.collides_with(self.ui.fr_control_container, new_x, new_y) and not card.hits_window_frame(self, new_x, new_y):
             card.move_to(new_x, new_y)
         else:
-            # Doesnt work yet
+            # TODO: Doesnt work yet
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.old_x_coord, self.old_y_coord)))
 
     def mouseReleaseEvent(self, event):
@@ -374,10 +377,12 @@ class IPlanPy(QtWidgets.QWidget):
                 event.ignore()
                 return
 
+    # Checks if the release position of the Drag and Drop requires a delete action or new connection.
     def check_release_position(self, posX, posY):
         self.check_for_delete(posX, posY)
         self.check_for_new_connection(posX, posY)
 
+    # Builds a new card of the class Card.
     def make_new_card(self, event):
         card = Card(self, self.card_id)
         new_y = self.ui.fr_control_container.size().height() + 3
@@ -385,7 +390,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.all_cards.append(card)
         self.card_id = self.card_id + 1
 
-    # Checks if card was released over the delte card button.
+    # Checks if card was released over the delete card button.
     def check_for_delete(self, posX, posY):
         card = self.get_card_under_mouse()
         if card is not None:
@@ -397,6 +402,7 @@ class IPlanPy(QtWidgets.QWidget):
                 self.all_cards.remove(card)
                 self.update()
 
+    # Checks if card was released over another card.
     def check_for_new_connection(self, posX, posY):
         current_card = self.get_card_under_mouse()
         if current_card is not None and len(self.all_cards) > 1:
@@ -404,6 +410,7 @@ class IPlanPy(QtWidgets.QWidget):
                 # Can collide with itself
                 if c is current_card:
                     continue
+                # Builds a new connection between the two collided cards.
                 if current_card.collides(c):
                     self.connections.connect((current_card, c))
                     x, y = self.clicked_card_pos
