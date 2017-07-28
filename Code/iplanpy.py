@@ -314,16 +314,20 @@ class IPlanPy(QtWidgets.QWidget):
         alt_modifier = (event.modifiers() & QtCore.Qt.AltModifier) != 0
         card = self.get_card_under_mouse()
         if card is not None:
-            if (alt_modifier and event.key() == QtCore.Qt.Key_Up):
+            if alt_modifier and event.key() == QtCore.Qt.Key_Up:
                 card.next_color()
-            if (alt_modifier and event.key() == QtCore.Qt.Key_Down):
+            if alt_modifier and event.key() == QtCore.Qt.Key_Down:
                 card.previous_color()
             if alt_modifier and (event.key() == QtCore.Qt.Key_Right):
                 card.toggle_type()
             if alt_modifier and (event.key() == QtCore.Qt.Key_Left):
                 card.toggle_type()
-        if alt_modifier and (event.key() == QtCore.Qt.Key_Backspace):
+
+        if event.key() == QtCore.Qt.Key_Control:
             self.connections.remove_last_connection()
+            self.update()
+        if event.key() == QtCore.Qt.Key_Alt:
+            self.connections.restore_connection()
             self.update()
 
     def mousePressEvent(self, event):
