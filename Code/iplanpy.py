@@ -274,6 +274,9 @@ class IPlanPy(QtWidgets.QWidget):
                 if button == "Minus":
                     self.connections.remove_last_connection()
                     self.update()
+                if button == "Plus":
+                    self.connections.restore_connection()
+                    self.update()
             else:
                 if button == "B":
                     mouse_release_event = QtGui.QMouseEvent(
