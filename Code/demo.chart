@@ -1,11 +1,11 @@
-0;IPlanPy;'';920;71;False;green;
-1;wiimote;'- ir sensor\n- buttons\n- accelerometer';193;285;True;rgb(85, 170, 255);
-2;vectortransform;'Umwandeln der ir Werte in Mauskoordinaten';305;588;True;rgb(85, 170, 255);
-3;gestureclassifier;'- nutzt machine learning system scikit-learn\n- csv mit Trainingsdaten werden bei Programmstart eingelesen\n- Rohdaten von Beschleunigungssensor der Wiimote';878;549;True;rgb(85, 170, 255);
-5;connectionmanager;'- Verwalten aller Verbindung\n- Liste aus Tupeln von Karten';1421;464;True;rgb(85, 170, 255);
-7;SVM;'';900;753;False;rgb(85, 170, 255);
-8;steady;'';703;849;False;rgb(85, 170, 255);
-9;shake;'';1101;869;False;rgb(85, 170, 255);
+0;IPlanPy;'';920;71;False;2;
+1;wiimote;'- ir sensor\n- buttons\n- accelerometer';193;285;True;0;
+2;vectortransform;'Umwandeln der ir Werte in Mauskoordinaten';305;588;True;0;
+3;gestureclassifier;'- nutzt machine learning system scikit-learn\n- csv mit Trainingsdaten werden bei Programmstart eingelesen\n- Rohdaten von Beschleunigungssensor der Wiimote';878;549;True;0;
+5;connectionmanager;'- Verwalten aller Verbindung\n- Liste aus Tupeln von Karten';1421;464;True;0;
+7;SVM;'';900;753;False;0;
+8;steady;'';703;849;False;0;
+9;shake;'';1101;869;False;0;
 -
 1;0;
 2;0;

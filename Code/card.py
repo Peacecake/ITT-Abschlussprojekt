@@ -12,7 +12,7 @@ class Card(QFrame):
         self.id = id
         self.DEFAULT_COLOR = "rgb(85, 170, 255)"
         self.DEFAULT_BORDER = "none"
-        self.available_colors = [self.DEFAULT_COLOR, 'red', 'green', "yellow"]
+        self.available_colors = [self.DEFAULT_COLOR, '#c0392b', '#2ecc71', '#f1c40f', '#1abc9c']
         self.color_index = 0
         self.color = self.available_colors[self.color_index]
         self.border = self.DEFAULT_BORDER
@@ -42,7 +42,7 @@ class Card(QFrame):
         self.resize(281, 80)
         self.title_field.resize(230, 60)
         self.title_field.move(25, 10)
-        self.set_title_font(25)
+        self.set_title_font(20)
 
     def setup_default_card(self):
         self.setup_frame()
@@ -78,15 +78,16 @@ class Card(QFrame):
 
     def update_stylesheet(self):
         self.setStyleSheet("background-color: " + self.color +
-                           "; border: " + self.border + ";")
+                           "; border: " + self.border +
+                           "; border-radius: 5px;")
 
     def setup_frame(self):
         self.resize(281, 181)
         self.setVisible(True)
 
     def setup_title(self):
-        self.title_field.resize(131, 29)
-        self.title_field.move(72, 10)
+        self.title_field.resize(146, 29)
+        self.title_field.move(67, 10)
         self.title_field.setParent(self)
         self.title_field.setStyleSheet('background-color: white')
         self.title_field.setVisible(True)
@@ -95,7 +96,7 @@ class Card(QFrame):
         self.content_field.resize(261, 121)
         self.content_field.move(10, 50)
         self.content_field.setParent(self)
-        self.content_field.setStyleSheet('background-color: white')
+        self.content_field.setStyleSheet('background-color: white; font-size: 12px;')
         self.content_field.setVisible(True)
 
     def delete(self):
@@ -103,11 +104,10 @@ class Card(QFrame):
 
     def focus(self):
         self.unfocued_border = self.border
-        self.set_border("2px solid orange")
+        self.set_border("2px solid #f39c12")
         self.title_field.setFocus()
         self.raise_()
         self.is_focused = True
-        print("focus " + str(self.is_focused))
 
     def unfocus(self):
         self.set_border(self.unfocued_border)

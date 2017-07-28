@@ -114,7 +114,7 @@ class IPlanPy(QtWidgets.QWidget):
             card.title_field.setText(info[1])
             card.content_field.setText(ast.literal_eval(info[2]))
             card.move_to(int(info[3]), int(info[4]))
-            card.set_background_color(info[6])
+            card.set_background_color(card.available_colors[int(info[6])])
             self.all_cards.append(card)
         self.card_id = max(ids) + 1
 
@@ -190,7 +190,7 @@ class IPlanPy(QtWidgets.QWidget):
             x_pos = card.pos().x()
             y_pos = card.pos().y()
             card_type = str(card.has_text_field)
-            color = card.color
+            color = card.color_index
             file.write(str(cid) + ";" + title + ";" + content + ";" + str(x_pos) +
                        ";" + str(y_pos) + ";" + card_type + ";" + color + ";\n")
         file.write("-\n")
@@ -327,11 +327,9 @@ class IPlanPy(QtWidgets.QWidget):
             card = self.get_card_under_mouse()
             if card is not None:
                 card.focus()
-        # super(IPlanPy, self).mousePressEvent(event)
-        # print("mousePressEvent" + str(self.__mousePressPos) + ' ' + str(self.__mouseMovePos))
 
     def mouseMoveEvent(self, event):
-        if self.wiimote is not None and self.wiimote.buttons["B"]:  # event.buttons() & QtCore.Qt.LeftButton:
+        if (self.wiimote is not None and self.wiimote.buttons["B"]) or (event.buttons() & QtCore.Qt.LeftButton):
             focused_card = self.get_focused_card()
             if focused_card is not None:
                 self.handle_card_movement(event, focused_card)
@@ -371,14 +369,14 @@ class IPlanPy(QtWidgets.QWidget):
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
             moved = event.globalPos() - self.__mousePressPos
-            self.check_release_pos(event.pos().x(), event.pos().y())
+            self.check_release_position(event.pos().x(), event.pos().y())
             if moved.manhattanLength() > 3:
                 event.ignore()
                 return
 
-    def check_release_pos(self, posX, posY):
-        self.register_if_deleted(posX, posY)
-        self.register_if_drawline(posX, posY)
+    def check_release_position(self, posX, posY):
+        self.check_for_delete(posX, posY)
+        self.check_for_new_connection(posX, posY)
 
     def make_new_card(self, event):
         card = Card(self, self.card_id)
@@ -387,34 +385,26 @@ class IPlanPy(QtWidgets.QWidget):
         self.all_cards.append(card)
         self.card_id = self.card_id + 1
 
-    def register_if_deleted(self, posX, posY):
+    # Checks if card was released over the delte card button.
+    def check_for_delete(self, posX, posY):
         card = self.get_card_under_mouse()
         if card is not None:
-            if card.collides(self.ui.delete_card):
+            x, y = card.center()
+            # Cards center has to be over the delete button in order to delete it.
+            if card.collides_with(self.ui.delete_card, x, y):
                 self.connections.delete_all_card_connections(card)
                 card.delete()
                 self.all_cards.remove(card)
                 self.update()
-                '''
-        delete_button_pos_x1 = self.delete_card.x()
-        delete_button_pos_x2 = delete_button_pos_x1 + self.delete_card.width()
-        delete_button_pos_y1 = self.delete_card.y()
-        delete_button_pos_y2 = delete_button_pos_y1 + self.delete_card.height()
-        if delete_button_pos_x2 >= posX >= delete_button_pos_x1 and delete_button_pos_y1 <= posY <= delete_button_pos_y2:
-            card = self.get_card_under_mouse()
-            if card is not None:
-                self.connections.delete_all_card_connections(card)
-                card.delete()
-                self.all_cards.remove(card)
-                self.update()'''
 
-    def register_if_drawline(self, posX, posY):
+    def check_for_new_connection(self, posX, posY):
         current_card = self.get_card_under_mouse()
         if current_card is not None and len(self.all_cards) > 1:
             for c in self.all_cards:
+                # Can collide with itself
                 if c is current_card:
                     continue
-                if current_card.collides(c):  # , current_card.pos().x(), current_card.pos().y()):
+                if current_card.collides(c):
                     self.connections.connect((current_card, c))
                     x, y = self.clicked_card_pos
                     current_card.move_to(x, y)
@@ -423,6 +413,7 @@ class IPlanPy(QtWidgets.QWidget):
                     c.set_border(border)
                     self.update()
 
+    # Draw connections on every update
     def paintEvent(self, event):
         painter = QtGui.QPainter()
         painter.begin(self)
@@ -437,6 +428,8 @@ class IPlanPy(QtWidgets.QWidget):
             painter.drawLine(x1, y1, x2, y2)
         painter.end()
 
+    # Callback of gestureclassifier. Gets called when classifier detects "shake" gesture.
+    # Deletes all connections from currently focued card.
     def handle_shake_gesture(self):
         for card in self.all_cards:
             if card.is_focused is True:
