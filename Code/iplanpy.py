@@ -271,6 +271,7 @@ class IPlanPy(QtWidgets.QWidget):
                     card.previous_color()
                 if (button == "Left" or button == "Right") and (card is not None):
                     card.toggle_type()
+                    self.update()
                 if button == "Minus":
                     self.connections.remove_last_connection()
                     self.update()
@@ -320,8 +321,10 @@ class IPlanPy(QtWidgets.QWidget):
                 card.previous_color()
             if alt_modifier and (event.key() == QtCore.Qt.Key_Right):
                 card.toggle_type()
+                self.update()
             if alt_modifier and (event.key() == QtCore.Qt.Key_Left):
                 card.toggle_type()
+                self.update()
 
         if event.key() == QtCore.Qt.Key_Control:
             self.connections.remove_last_connection()

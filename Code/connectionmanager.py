@@ -33,7 +33,6 @@ class ConnectionManager:
             if deleteable_connection is not None:
                 self.restoreable_connections.append(deleteable_connection)
                 self.connections.remove(deleteable_connection)
-        # self.connections = self.connections[:-1]
 
     def restore_connection(self):
         if len(self.restoreable_connections) > 0:
