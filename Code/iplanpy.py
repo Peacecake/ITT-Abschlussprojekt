@@ -25,6 +25,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.old_x_coord = 0
         self.old_y_coord = 0
         self.all_cards = []
+        self.default_delete_card_style = None
 
         self.my_vector_transform = VectorTransform()
         self.classifier = GestureClassifier()
@@ -66,6 +67,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui.btn_load_chart.clicked.connect(self.load_chart)
         self.ui.btn_save.clicked.connect(self.on_btn_save_chart)
         self.ui.btn_new_chart.clicked.connect(self.on_btn_new_chart)
+        self.default_delete_card_style = self.ui.delete_card.styleSheet();
         self.show()
 
     def on_btn_new_chart(self, event):
@@ -97,13 +99,17 @@ class IPlanPy(QtWidgets.QWidget):
         if file_name is not None:
             card_infos, conn_info = self.get_card_info_from_file(file_name.text())
             if card_infos is not None:
-                self.card_id = 0
-                self.remove_all_cards()
-                self.connections.connections.clear()
-                self.update()
-                self.create_card_from_file(card_infos)
-                self.create_conn_from_file(conn_info)
-                self.toggle_save_and_load_frame(None)
+                try:
+                    self.card_id = 0
+                    self.remove_all_cards()
+                    self.connections.connections.clear()
+                    self.update()
+                    self.create_card_from_file(card_infos)
+                    self.create_conn_from_file(conn_info)
+                    self.toggle_save_and_load_frame(None)
+                except Exception as e:
+                    msg = "Could not create chart from file " + file_name.text() + "! Sorry!\nInformation: " + str(e)
+                    QMessageBox.critical(self, "Error", msg)
 
     def create_card_from_file(self, card_infos):
         ids = []
@@ -152,7 +158,7 @@ class IPlanPy(QtWidgets.QWidget):
                         conn_info.append(line)
                 return card_info, conn_info
         except Exception as e:
-            QMessageBox.warning(self, "Warning", "Could not load chart!\nAdditional information:\n" + e)
+            QMessageBox.warning(self, "Warning", "Could not load chart!\nAdditional information:\n" + str(e))
             return None
 
     def remove_all_cards(self):
@@ -178,8 +184,12 @@ class IPlanPy(QtWidgets.QWidget):
 
     def save_chart(self, file_name):
         self.ui.le_save_as.setText("")
-        with open(file_name + ".chart", "w") as new_file:
-            self.write_card_data(new_file)
+        try:
+            with open(file_name + ".chart", "w") as new_file:
+                self.write_card_data(new_file)
+        except Exception as e:
+            msg = "Could save file " + file_name + "! Sorry!\nInformation: " + str(e)
+            QMessageBox.critical(self, "Error", msg)
         self.load_available_charts()
 
     def write_card_data(self, file):
@@ -192,7 +202,7 @@ class IPlanPy(QtWidgets.QWidget):
             card_type = str(card.has_text_field)
             color = card.color_index
             file.write(str(cid) + ";" + title + ";" + content + ";" + str(x_pos) +
-                       ";" + str(y_pos) + ";" + card_type + ";" + color + ";\n")
+                       ";" + str(y_pos) + ";" + card_type + ";" + str(color) + ";\n")
         file.write("-\n")
         for conn in self.connections.connections:
             c1, c2 = conn
@@ -393,7 +403,6 @@ class IPlanPy(QtWidgets.QWidget):
 
     # Handles the card movement and collisions with the main window frame.
     def handle_card_movement(self, mouse_event, card):
-        self.update()
         new_x = card.pos().x() + mouse_event.pos().x() - self.old_x_coord
         new_y = card.pos().y() + mouse_event.pos().y() - self.old_y_coord
         if not card.collides_with(self.ui.fr_control_container, new_x, new_y) and not card.hits_window_frame(self, new_x, new_y):
@@ -401,6 +410,15 @@ class IPlanPy(QtWidgets.QWidget):
         else:
             # TODO: Doesnt work yet
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.old_x_coord, self.old_y_coord)))
+        self.handle_delete_card_visual(card, mouse_event)
+        self.update()
+
+    def handle_delete_card_visual(self, card, mouse_event):
+        x, y = card.center()
+        if card.collides_with(self.ui.delete_card, x, y):
+            self.ui.delete_card.setStyleSheet("background-color:red; font-size:17px; color:white;")
+        else:
+            self.ui.delete_card.setStyleSheet(self.default_delete_card_style)
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
@@ -433,6 +451,7 @@ class IPlanPy(QtWidgets.QWidget):
                 self.connections.delete_all_card_connections(card)
                 card.delete()
                 self.all_cards.remove(card)
+                self.ui.delete_card.setStyleSheet(self.default_delete_card_style)
                 self.update()
 
     # Checks if card was released over another card.
