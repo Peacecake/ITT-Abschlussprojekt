@@ -4,12 +4,15 @@
 
 from pylab import *
 from numpy import *
+from math import exp
 
 
 class VectorTransform:
     def __init__(self):
         super().__init__()
         self.buffer = []
+        self.buffer_size = 8
+        self.weights = self.get_weights()
 
     def transform(self, vectors, x_size, y_size):
         self.DEST_W = x_size
@@ -42,18 +45,21 @@ class VectorTransform:
         x = x / z
         y = y / z
 
-        return x, y
+        # return x, y
 
         self.buffer.append((x, y))
-        self.buffer = self.buffer[-3:]
+        self.buffer = self.buffer[-self.buffer_size:]
         x_sum = 0
         y_sum = 0
-        for p in self.buffer:
-            a, b = p
-            x_sum = x_sum + a
-            y_sum = y_sum + b
+        wsum = 0
+        for i in range(0, len(self.buffer)):
+            a, b = self.buffer[i]
+            weight = self.weights[i]
+            x_sum = x_sum + (a * self.weights[i])
+            y_sum = y_sum + (b * self.weights[i])
+            wsum = wsum + weight
 
-        return x_sum / len(self.buffer), y_sum / len(self.buffer)
+        return x_sum / wsum, y_sum / wsum
 
     def get_factor_vector(self, x1, x2, x3, x4, y1, y2, y3, y4):
         source_points_123 = matrix([[x1, x2, x3],
@@ -85,3 +91,15 @@ class VectorTransform:
             sorted_y[3] = x1, y1
             sorted_y[2] = x2, y2
         return sorted_y
+
+    def get_weights(self):
+        weights = []
+        wsum = 0
+        for i in range(0, self.buffer_size):
+            weights.append(exp(i * 0.5))
+            wsum += weights[i]
+
+        for i in range(0, len(weights)):
+            weights[i] = weights[i] / wsum
+
+        return weights

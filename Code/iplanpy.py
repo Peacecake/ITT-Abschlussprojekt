@@ -301,7 +301,7 @@ class IPlanPy(QtWidgets.QWidget):
                 print("Button " + button + " is released")
 
     def on_wiimote_ir(self, event):
-        if self.ir_callback_count % 3 == 0:
+        if self.ir_callback_count % 4 == 0:
             # if len(event) > 4:
              #   signals = []
               #  for signal in event:
@@ -448,7 +448,7 @@ class IPlanPy(QtWidgets.QWidget):
             x, y = card.center()
             # Cards center has to be over the delete button in order to delete it.
             if card.collides_with(self.ui.delete_card, x, y):
-                self.connections.delete_all_card_connections(card)
+                self.connections.delete_all_card_connections(card, False)
                 card.delete()
                 self.all_cards.remove(card)
                 self.ui.delete_card.setStyleSheet(self.default_delete_card_style)
@@ -492,7 +492,7 @@ class IPlanPy(QtWidgets.QWidget):
     def handle_shake_gesture(self):
         for card in self.all_cards:
             if card.is_focused is True:
-                self.connections.delete_all_card_connections(card)
+                self.connections.delete_all_card_connections(card, True)
                 self.update()
 
 
