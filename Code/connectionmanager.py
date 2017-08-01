@@ -9,8 +9,11 @@ class ConnectionManager:
         self.connections = []
         self.restoreable_connections = []
 
+    # Save connection if it does not exist already.
     def connect(self, new_connection):
-        self.connections.append(new_connection)
+        c1, c2 = new_connection
+        if (c1, c2) not in self.connections and (c2, c1) not in self.connections:
+            self.connections.append(new_connection)
 
     def delete_all_card_connections(self, card, is_restoreable):
         new_connections = []

@@ -8,6 +8,7 @@ import ast
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QPainter, QColor, QPen
+from operator import itemgetter
 import wiimote
 from vectortransform import VectorTransform
 from gestureclassifier import GestureClassifier
@@ -298,18 +299,15 @@ class IPlanPy(QtWidgets.QWidget):
                         QtCore.Qt.NoModifier
                     )
                     QtCore.QCoreApplication.postEvent(self, mouse_release_event)
-                print("Button " + button + " is released")
 
     def on_wiimote_ir(self, event):
+        # Only use every fourth output from ir sensor
         if self.ir_callback_count % 4 == 0:
-            # if len(event) > 4:
-             #   signals = []
-              #  for signal in event:
-               #     if signal["size"] is 1 or signal["size"] is 2:
-                #        signals.append(signal)
-            # else:
-            signals = event
-            if len(signals) >= 4:
+            if len(event) >= 4:
+                # Sort all ir signals ascending by size
+                # Source: https://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-
+                # the-dictionary-in-python
+                signals = sorted(event, key=itemgetter('size'))
                 print(signals)
                 vectors = []
                 for e in signals:
@@ -410,12 +408,11 @@ class IPlanPy(QtWidgets.QWidget):
         else:
             # TODO: Doesnt work yet
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.old_x_coord, self.old_y_coord)))
-        self.handle_delete_card_visual(card, mouse_event)
+        self.handle_delete_card_visual(card)
         self.update()
 
-    def handle_delete_card_visual(self, card, mouse_event):
-        x, y = card.center()
-        if card.collides_with(self.ui.delete_card, x, y):
+    def handle_delete_card_visual(self, card):
+        if self.card_over_delete(card):
             self.ui.delete_card.setStyleSheet("background-color:red; font-size:17px; color:white;")
         else:
             self.ui.delete_card.setStyleSheet(self.default_delete_card_style)
@@ -430,7 +427,7 @@ class IPlanPy(QtWidgets.QWidget):
 
     # Checks if the release position of the Drag and Drop requires a delete action or new connection.
     def check_release_position(self, posX, posY):
-        self.check_for_delete(posX, posY)
+        self.check_for_delete()
         self.check_for_new_connection(posX, posY)
 
     # Builds a new card of the class Card.
@@ -442,17 +439,28 @@ class IPlanPy(QtWidgets.QWidget):
         self.card_id = self.card_id + 1
 
     # Checks if card was released over the delete card button.
-    def check_for_delete(self, posX, posY):
+    def check_for_delete(self):
         card = self.get_card_under_mouse()
         if card is not None:
-            x, y = card.center()
-            # Cards center has to be over the delete button in order to delete it.
-            if card.collides_with(self.ui.delete_card, x, y):
+            # Cards left half has to be over the delete button in order to delete it.
+            if self.card_over_delete(card):
                 self.connections.delete_all_card_connections(card, False)
                 card.delete()
                 self.all_cards.remove(card)
                 self.ui.delete_card.setStyleSheet(self.default_delete_card_style)
                 self.update()
+
+    # Checks if left half of card is colliding with the delete card
+    def card_over_delete(self, card):
+        card_x = card.pos().x() + (card.size().width() / 2)
+        card_y = card.pos().y()
+        card_h = card.size().height()
+        card_w = card.size().width() / 2
+        del_x = self.ui.delete_card.pos().x()
+        del_y = self.ui.delete_card.pos().y()
+        del_h = self.ui.delete_card.size().height()
+        del_w = self.ui.delete_card.size().width()
+        return card_x < del_x + del_w and card_x + card_w > del_x and card_y < del_y + del_h and card_y + card_h > del_y
 
     # Checks if card was released over another card.
     def check_for_new_connection(self, posX, posY):

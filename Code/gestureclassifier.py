@@ -20,13 +20,15 @@ class GestureClassifier:
         self.train_predicter()
 
     # Observer pattern taken from https://en.wikipedia.org/wiki/Observer_pattern
-    def register_callback(self, function):
-        self._observers.append(function)
+    def register_callback(self, func):
+        self._observers.append(func)
 
     def notify_observers(self):
-        for function in self._observers:
-            function()
+        for func in self._observers:
+            func()
 
+    # Gets raw x, y and z accelerometer data from wiimote and tries to predict the gesture using the svm.
+    # If gesture 'shake' is detected all observers get notified.
     def add_accelerometer_data(self, x, y, z):
         frequency = self.get_frequency(x, y, z)
         try:
@@ -40,6 +42,7 @@ class GestureClassifier:
         except Exception as e:
             print(e)
 
+    # Calculates frequency of raw x, y and z values
     def get_frequency(self, x, y, z):
         buffer_size = 32
         self.raw_x_data = np.append(self.raw_x_data, x)
@@ -51,6 +54,7 @@ class GestureClassifier:
         raw_gesture_data = [self.raw_x_data + self.raw_y_data + self.raw_z_data / 3]
         return [np.abs(fft(l) / len(l))[1:int(len(l) / 2)] for l in raw_gesture_data]
 
+    # Reads csv files containing movement data. These data gets used to train the svm.
     def train_predicter(self):
         all_freq_raw = []
         all_lengths = []

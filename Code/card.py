@@ -30,6 +30,7 @@ class Card(QFrame):
         self.update_stylesheet()
         self.setMouseTracking(True)
 
+    # Switches between default and only_title card types
     def toggle_type(self):
         self.has_text_field = not self.has_text_field
         if self.has_text_field is not True:
@@ -37,6 +38,7 @@ class Card(QFrame):
         else:
             self.setup_default_card()
 
+    # Sets card to card with only a title textbox
     def setup_title_only_card(self):
         self.content_field.setParent(None)
         self.resize(281, 80)
@@ -44,12 +46,14 @@ class Card(QFrame):
         self.title_field.move(25, 10)
         self.set_title_font(20)
 
+    # Sets card to default card style
     def setup_default_card(self):
         self.setup_frame()
         self.setup_title()
         self.setup_content()
         self.set_title_font(12)
 
+    # Sets font size of title textbox to passed size
     def set_title_font(self, font_size):
         self.title_field.selectAll()
         font = self.title_field.font()
@@ -68,10 +72,12 @@ class Card(QFrame):
             self.color_index = len(self.available_colors) - 1
         self.set_background_color(self.available_colors[self.color_index])
 
+    # Sets card background to passed color.
     def set_background_color(self, color):
         self.color = color
         self.update_stylesheet()
 
+    # Sets border of card to passed border style
     def set_border(self, border):
         self.border = border
         self.update_stylesheet()
@@ -81,10 +87,12 @@ class Card(QFrame):
                            "; border: " + self.border +
                            "; border-radius: 5px;")
 
+    # Sets up size of card
     def setup_frame(self):
         self.resize(281, 181)
         self.setVisible(True)
 
+    # Sets up title textbox
     def setup_title(self):
         self.title_field.resize(146, 29)
         self.title_field.move(67, 10)
@@ -92,6 +100,7 @@ class Card(QFrame):
         self.title_field.setStyleSheet('background-color: white')
         self.title_field.setVisible(True)
 
+    # Sets up content textbox
     def setup_content(self):
         self.content_field.resize(261, 121)
         self.content_field.move(10, 50)
@@ -101,9 +110,11 @@ class Card(QFrame):
 
     # Source:
     # https://stackoverflow.com/questions/5899826/pyqt-how-to-remove-a-widget
+    # Deletes card.
     def delete(self):
         self.setParent(None)
 
+    # Gives card focus.
     def focus(self):
         self.unfocued_border = self.border
         self.set_border("2px solid #f39c12")
@@ -111,18 +122,22 @@ class Card(QFrame):
         self.raise_()
         self.is_focused = True
 
+    # Removes focus from card.
     def unfocus(self):
         self.set_border(self.unfocued_border)
         self.is_focused = False
 
+    # Returns center of card.
     def center(self):
         x = self.pos().x() + (self.size().width() / 2)
         y = self.pos().y() + (self.size().height() / 2)
         return x, y
 
+    # Moves card to passed coordinates.
     def move_to(self, x, y):
         self.setGeometry(x, y, self.size().width(), self.size().height())
 
+    # Checks if given point collides with passed widget.
     def collides_with(self, widget, new_x, new_y):
         x1 = widget.pos().x()
         x2 = x1 + widget.size().width()
@@ -135,6 +150,7 @@ class Card(QFrame):
 
     # Source:
     # https://stackoverflow.com/questions/23302698/java-check-if-two-rectangles-overlap-at-any-point
+    # Checks if card collides with widget.
     def collides(self, widget):
         x = self.pos().x()
         y = self.pos().y()
@@ -142,6 +158,7 @@ class Card(QFrame):
         height = self.size().height()
         return x < widget.pos().x() + widget.size().width() and x + width > widget.pos().x() and y < widget.pos().y() + widget.size().height() and y + height > widget.pos().y()
 
+    # Checks if given point collides with passed window frame.
     def hits_window_frame(self, window_frame, new_x, new_y):
         if new_y <= 0 or new_y + self.size().height() >= window_frame.size().height() and new_x >= 0 or new_x + self.size().width() >= window_frame.size().width():
             return True

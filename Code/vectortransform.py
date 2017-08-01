@@ -45,8 +45,7 @@ class VectorTransform:
         x = x / z
         y = y / z
 
-        # return x, y
-
+        # Calculate the weighted average of buffer
         self.buffer.append((x, y))
         self.buffer = self.buffer[-self.buffer_size:]
         x_sum = 0
@@ -75,6 +74,9 @@ class VectorTransform:
 
         return [float(x) for x in scale_to_source]
 
+    # Coordinates first get ordered ascending by y value. From this follows that the first to entries have to be
+    # the coordinates at the bottom and the third and fourth at the top. Depending on their x values they have to
+    # be switched to represent the edges of the display.
     def get_ordered_vectors(self, vectors):
         # sorted_y is sorted by y value
         # Source: https://stackoverflow.com/questions/37111798/how-to-sort-a-list-of-x-y-coordinates
@@ -92,6 +94,8 @@ class VectorTransform:
             sorted_y[2] = x2, y2
         return sorted_y
 
+    # Depending on buffer_size automatically fills a list containing weights for weighted average calculation.
+    # The weights get calculated from a flattened exponential function.
     def get_weights(self):
         weights = []
         wsum = 0
