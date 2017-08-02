@@ -1,0 +1,20 @@
+1. Wiimote connecten
+    - Menü
+    - Wiimote Knopfdruck
+    - Verbindung erfolgreich
+2. Bewegung
+    - Wiimote
+    - Bildschirm
+3. Neue Karte erzeugen
+4. Kartenstyle wählen
+5. Karte beschriften
+6. Neue Karten erzeugen
+7. Verbinden
+8. Verbindung rückgangig machen und wieder hinzufügen
+9. Shake zeigen (Wiimote auch zeigen)
+10. Karten löschen außer drei
+11. Karten beschriften
+12. Speichern
+13. Reload
+
+
