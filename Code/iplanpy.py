@@ -304,15 +304,7 @@ class IPlanPy(QtWidgets.QWidget):
         # Only use every fourth output from ir sensor
         if self.ir_callback_count % 4 == 0:
             if len(event) >= 4:
-                # Sort all ir signals ascending by size
-                # Source: https://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-
-                # the-dictionary-in-python
-                signals = sorted(event, key=itemgetter('size'))
-                print(signals)
-                vectors = []
-                for e in signals:
-                    vectors.append((e["x"], e["y"]))
-                x, y = self.my_vector_transform.transform(vectors, self.size().width(), self.size().height())
+                x, y = self.my_vector_transform.transform(event, self.size().width(), self.size().height())
                 QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(x, y)))
         self.ir_callback_count = self.ir_callback_count + 1
 

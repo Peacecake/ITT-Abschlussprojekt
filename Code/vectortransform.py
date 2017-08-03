@@ -2,6 +2,8 @@
 # coding: utf-8
 # -*- coding: utf-8 -*-
 
+
+from operator import itemgetter
 from pylab import *
 from numpy import *
 from math import exp
@@ -14,10 +16,11 @@ class VectorTransform:
         self.buffer_size = 8
         self.weights = self.get_weights()
 
-    def transform(self, vectors, x_size, y_size):
-        self.DEST_W = x_size
-        self.DEST_H = y_size
-        vectors = self.get_ordered_vectors(vectors)
+    def transform(self, signals, x_size, y_size):
+        DEST_W = x_size
+        DEST_H = y_size
+        coords = self.filter_signals(signals)
+        vectors = self.get_ordered_vectors(coords)
         sx1, sy1 = vectors[0]
         sx2, sy2 = vectors[1]
         sx3, sy3 = vectors[2]
@@ -27,9 +30,9 @@ class VectorTransform:
                                  [l * sy1, m * sy2, t * sy3],
                                  [l, m, t]])
 
-        dx1, dy1 = 0, self.DEST_H
-        dx2, dy2 = self.DEST_W, self.DEST_H
-        dx3, dy3 = self.DEST_W, 0
+        dx1, dy1 = 0, DEST_H
+        dx2, dy2 = DEST_W, DEST_H
+        dx3, dy3 = DEST_W, 0
         dx4, dy4 = 0, 0
         l, m, t = self.get_factor_vector(dx1, dx2, dx3, dx4, dy1, dy2, dy3, dy4)
         unit_to_destination = matrix([[l * dx1, m * dx2, t * dx3],
@@ -107,3 +110,13 @@ class VectorTransform:
             weights[i] = weights[i] / wsum
 
         return weights
+
+    def filter_signals(self, raw_signals):
+        # Sort all ir signals ascending by size
+        # Source: https://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-
+        # the-dictionary-in-python
+        signals = sorted(raw_signals, key=itemgetter('size'))
+        coords = []
+        for sig in signals:
+            coords.append((sig["x"], sig["y"]))
+        return coords
