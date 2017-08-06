@@ -398,7 +398,6 @@ class IPlanPy(QtWidgets.QWidget):
         if not card.collides_with(self.ui.fr_control_container, new_x, new_y) and not card.hits_window_frame(self, new_x, new_y):
             card.move_to(new_x, new_y)
         else:
-            # TODO: Doesnt work yet
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.old_x_coord, self.old_y_coord)))
         self.handle_delete_card_visual(card)
         self.update()
