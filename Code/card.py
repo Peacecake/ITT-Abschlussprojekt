@@ -156,11 +156,12 @@ class Card(QFrame):
         y = self.pos().y()
         width = self.size().width()
         height = self.size().height()
-        return x < widget.pos().x() + widget.size().width() and x + width > widget.pos().x() and y < widget.pos().y() + widget.size().height() and y + height > widget.pos().y()
+        width_fits = x < widget.pos().x() + widget.size().width() and x + width > widget.pos().x()
+        height_fits = y < widget.pos().y() + widget.size().height() and y + height > widget.pos().y()
+        return width_fits and height_fits
 
     # Checks if given point collides with passed window frame.
     def hits_window_frame(self, window_frame, new_x, new_y):
-        if new_y <= 0 or new_y + self.size().height() >= window_frame.size().height() and new_x >= 0 or new_x + self.size().width() >= window_frame.size().width():
-            return True
-        else:
-            return False
+        height_fits = new_y <= 0 or new_y + self.size().height() >= window_frame.size().height()
+        width_fits = new_x >= 0 or new_x + self.size().width() >= window_frame.size().width()
+        return height_fits and width_fits

@@ -68,7 +68,7 @@ class IPlanPy(QtWidgets.QWidget):
         self.ui.btn_load_chart.clicked.connect(self.load_chart)
         self.ui.btn_save.clicked.connect(self.on_btn_save_chart)
         self.ui.btn_new_chart.clicked.connect(self.on_btn_new_chart)
-        self.default_delete_card_style = self.ui.delete_card.styleSheet();
+        self.default_delete_card_style = self.ui.delete_card.styleSheet()
         self.show()
 
     def on_btn_new_chart(self, event):
@@ -395,7 +395,9 @@ class IPlanPy(QtWidgets.QWidget):
     def handle_card_movement(self, mouse_event, card):
         new_x = card.pos().x() + mouse_event.pos().x() - self.old_x_coord
         new_y = card.pos().y() + mouse_event.pos().y() - self.old_y_coord
-        if not card.collides_with(self.ui.fr_control_container, new_x, new_y) and not card.hits_window_frame(self, new_x, new_y):
+        collides_with_ctrl_frame = card.collides_with(self.ui.fr_control_container, new_x, new_y)
+        collides_with_main_frame = card.hits_window_frame(self, new_x, new_y)
+        if not collides_with_ctrl_frame and not collides_with_main_frame:
             card.move_to(new_x, new_y)
         else:
             QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.old_x_coord, self.old_y_coord)))
